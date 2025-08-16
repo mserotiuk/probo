@@ -17,7 +17,7 @@ import {
   IconPencil,
   IconPlusLarge,
   IconTrashCan,
-  MeasureBadge,
+
   MeasureImplementation,
   PageHeader,
   Table,
@@ -29,6 +29,7 @@ import {
   useConfirm,
   useDialogRef,
 } from "@probo/ui";
+import { MeasureBadge } from "@probo/ui/src/Molecules/Badge/MeasureBadge";
 import {
   measuresQuery,
   useDeleteMeasureMutation,

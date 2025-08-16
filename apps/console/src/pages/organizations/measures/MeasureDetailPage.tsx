@@ -12,7 +12,7 @@ import {
   IconPencil,
   IconTrashCan,
   IconWarning,
-  MeasureBadge,
+
   Option,
   PageHeader,
   PropertyRow,
@@ -22,6 +22,7 @@ import {
   Tabs,
   useConfirm,
 } from "@probo/ui";
+import { MeasureBadge } from "@probo/ui/src/Molecules/Badge/MeasureBadge";
 import { useTranslate } from "@probo/i18n";
 import {
   ConnectionHandler,

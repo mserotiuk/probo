@@ -10,10 +10,11 @@ import {
   Tbody,
   Th,
   IconChevronDown,
-  MeasureBadge,
+
   IconTrashCan,
   TrButton,
 } from "@probo/ui";
+import { MeasureBadge } from "@probo/ui/src/Molecules/Badge/MeasureBadge";
 import { useTranslate } from "@probo/i18n";
 import type { LinkedMeasuresCardFragment$key } from "./__generated__/LinkedMeasuresCardFragment.graphql";
 import { useFragment } from "react-relay";
