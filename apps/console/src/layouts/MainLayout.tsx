@@ -5,6 +5,7 @@ import {
   IconBank,
   IconBook,
   IconCircleQuestionmark,
+  IconCrossLargeX,
   IconFire3,
   IconGroup1,
   IconInboxEmpty,
@@ -141,8 +142,13 @@ export function MainLayout() {
           />
           <SidebarItem
             label={__("Nonconformity Registries")}
-            icon={IconBook}
+            icon={IconCrossLargeX}
             to={`${prefix}/nonconformityRegistries`}
+          />
+          <SidebarItem
+            label={__("Compliance Registries")}
+            icon={IconBook}
+            to={`${prefix}/complianceRegistries`}
           />
           <SidebarItem
             label={__("Trust Center")}

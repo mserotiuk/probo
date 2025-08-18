@@ -44,4 +44,5 @@ const (
 	VendorContactEntityType
 	VendorDataPrivacyAgreementEntityType
 	NonconformityRegistryEntityType
+	ComplianceRegistryEntityType
 )

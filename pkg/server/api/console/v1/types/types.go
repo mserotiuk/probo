@@ -107,6 +107,32 @@ type CancelSignatureRequestPayload struct {
 	DeletedDocumentVersionSignatureID gid.GID `json:"deletedDocumentVersionSignatureId"`
 }
 
+type ComplianceRegistry struct {
+	ID                     gid.GID                           `json:"id"`
+	Organization           *Organization                     `json:"organization"`
+	ReferenceID            string                            `json:"referenceId"`
+	Area                   *string                           `json:"area,omitempty"`
+	Source                 *string                           `json:"source,omitempty"`
+	Audit                  *Audit                            `json:"audit"`
+	Requirement            *string                           `json:"requirement,omitempty"`
+	ActionsToBeImplemented *string                           `json:"actionsToBeImplemented,omitempty"`
+	Regulator              *string                           `json:"regulator,omitempty"`
+	Owner                  *People                           `json:"owner"`
+	LastReviewDate         *time.Time                        `json:"lastReviewDate,omitempty"`
+	DueDate                *time.Time                        `json:"dueDate,omitempty"`
+	Status                 coredata.ComplianceRegistryStatus `json:"status"`
+	CreatedAt              time.Time                         `json:"createdAt"`
+	UpdatedAt              time.Time                         `json:"updatedAt"`
+}
+
+func (ComplianceRegistry) IsNode()             {}
+func (this ComplianceRegistry) GetID() gid.GID { return this.ID }
+
+type ComplianceRegistryEdge struct {
+	Cursor page.CursorKey      `json:"cursor"`
+	Node   *ComplianceRegistry `json:"node"`
+}
+
 type ConfirmEmailInput struct {
 	Token string `json:"token"`
 }
@@ -194,6 +220,25 @@ type CreateAuditInput struct {
 
 type CreateAuditPayload struct {
 	AuditEdge *AuditEdge `json:"auditEdge"`
+}
+
+type CreateComplianceRegistryInput struct {
+	OrganizationID         gid.GID                           `json:"organizationId"`
+	ReferenceID            string                            `json:"referenceId"`
+	Area                   *string                           `json:"area,omitempty"`
+	Source                 *string                           `json:"source,omitempty"`
+	AuditID                gid.GID                           `json:"auditId"`
+	Requirement            *string                           `json:"requirement,omitempty"`
+	ActionsToBeImplemented *string                           `json:"actionsToBeImplemented,omitempty"`
+	Regulator              *string                           `json:"regulator,omitempty"`
+	OwnerID                gid.GID                           `json:"ownerId"`
+	LastReviewDate         *time.Time                        `json:"lastReviewDate,omitempty"`
+	DueDate                *time.Time                        `json:"dueDate,omitempty"`
+	Status                 coredata.ComplianceRegistryStatus `json:"status"`
+}
+
+type CreateComplianceRegistryPayload struct {
+	ComplianceRegistryEdge *ComplianceRegistryEdge `json:"complianceRegistryEdge"`
 }
 
 type CreateControlAuditMappingInput struct {
@@ -501,6 +546,14 @@ type DeleteAuditReportInput struct {
 
 type DeleteAuditReportPayload struct {
 	Audit *Audit `json:"audit"`
+}
+
+type DeleteComplianceRegistryInput struct {
+	ComplianceRegistryID gid.GID `json:"complianceRegistryId"`
+}
+
+type DeleteComplianceRegistryPayload struct {
+	DeletedComplianceRegistryID gid.GID `json:"deletedComplianceRegistryId"`
 }
 
 type DeleteControlAuditMappingInput struct {
@@ -964,6 +1017,7 @@ type Organization struct {
 	Data                    *DatumConnection                 `json:"data"`
 	Audits                  *AuditConnection                 `json:"audits"`
 	NonconformityRegistries *NonconformityRegistryConnection `json:"nonconformityRegistries"`
+	ComplianceRegistries    *ComplianceRegistryConnection    `json:"complianceRegistries"`
 	TrustCenter             *TrustCenter                     `json:"trustCenter,omitempty"`
 	CreatedAt               time.Time                        `json:"createdAt"`
 	UpdatedAt               time.Time                        `json:"updatedAt"`
@@ -1231,6 +1285,25 @@ type UpdateAuditInput struct {
 
 type UpdateAuditPayload struct {
 	Audit *Audit `json:"audit"`
+}
+
+type UpdateComplianceRegistryInput struct {
+	ID                     gid.GID                            `json:"id"`
+	ReferenceID            *string                            `json:"referenceId,omitempty"`
+	Area                   *string                            `json:"area,omitempty"`
+	Source                 *string                            `json:"source,omitempty"`
+	AuditID                *gid.GID                           `json:"auditId,omitempty"`
+	Requirement            *string                            `json:"requirement,omitempty"`
+	ActionsToBeImplemented *string                            `json:"actionsToBeImplemented,omitempty"`
+	Regulator              *string                            `json:"regulator,omitempty"`
+	OwnerID                *gid.GID                           `json:"ownerId,omitempty"`
+	LastReviewDate         *time.Time                         `json:"lastReviewDate,omitempty"`
+	DueDate                *time.Time                         `json:"dueDate,omitempty"`
+	Status                 *coredata.ComplianceRegistryStatus `json:"status,omitempty"`
+}
+
+type UpdateComplianceRegistryPayload struct {
+	ComplianceRegistry *ComplianceRegistry `json:"complianceRegistry"`
 }
 
 type UpdateControlInput struct {

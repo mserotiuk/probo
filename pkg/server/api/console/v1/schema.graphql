@@ -167,6 +167,22 @@ enum NonconformityRegistryStatus
     )
 }
 
+enum ComplianceRegistryStatus
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryStatus") {
+  OPEN
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryStatusOpen"
+    )
+  IN_PROGRESS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryStatusInProgress"
+    )
+  CLOSED
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryStatusClosed"
+    )
+}
+
 # Order Field Enums
 enum UserOrderField
   @goModel(model: "github.com/getprobo/probo/pkg/coredata.UserOrderField") {
@@ -624,6 +640,30 @@ enum NonconformityRegistryOrderField
     )
 }
 
+enum ComplianceRegistryOrderField
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderField") {
+  CREATED_AT
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderFieldCreatedAt"
+    )
+  REFERENCE_ID
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderFieldReferenceId"
+    )
+  LAST_REVIEW_DATE
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderFieldLastReviewDate"
+    )
+  DUE_DATE
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderFieldDueDate"
+    )
+  STATUS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryOrderFieldStatus"
+    )
+}
+
 enum TrustCenterAccessOrderField
   @goModel(model: "github.com/getprobo/probo/pkg/coredata.TrustCenterAccessOrderField") {
   CREATED_AT
@@ -719,6 +759,14 @@ input NonconformityRegistryOrder
   ) {
   direction: OrderDirection!
   field: NonconformityRegistryOrderField!
+}
+
+input ComplianceRegistryOrder
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.ComplianceRegistryOrderBy"
+  ) {
+  direction: OrderDirection!
+  field: ComplianceRegistryOrderField!
 }
 
 input TrustCenterAccessOrder
@@ -943,6 +991,14 @@ type Organization implements Node {
     before: CursorKey
     orderBy: NonconformityRegistryOrder
   ): NonconformityRegistryConnection! @goField(forceResolver: true)
+
+  complianceRegistries(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: ComplianceRegistryOrder
+  ): ComplianceRegistryConnection! @goField(forceResolver: true)
 
   trustCenter: TrustCenter @goField(forceResolver: true)
 
@@ -1353,6 +1409,24 @@ type NonconformityRegistry implements Node {
   updatedAt: Datetime!
 }
 
+type ComplianceRegistry implements Node {
+  id: ID!
+  organization: Organization! @goField(forceResolver: true)
+  referenceId: String!
+  area: String
+  source: String
+  audit: Audit! @goField(forceResolver: true)
+  requirement: String
+  actionsToBeImplemented: String
+  regulator: String
+  owner: People! @goField(forceResolver: true)
+  lastReviewDate: Datetime
+  dueDate: Datetime
+  status: ComplianceRegistryStatus!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
 type Report implements Node {
   id: ID!
   objectKey: String!
@@ -1650,6 +1724,20 @@ type NonconformityRegistryEdge {
   node: NonconformityRegistry!
 }
 
+type ComplianceRegistryConnection
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.ComplianceRegistryConnection"
+  ) {
+  totalCount: Int! @goField(forceResolver: true)
+  edges: [ComplianceRegistryEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ComplianceRegistryEdge {
+  cursor: CursorKey!
+  node: ComplianceRegistry!
+}
+
 # Root Types
 type Query {
   node(id: ID!): Node!
@@ -1880,6 +1968,17 @@ type Mutation {
   deleteNonconformityRegistry(
     input: DeleteNonconformityRegistryInput!
   ): DeleteNonconformityRegistryPayload!
+
+  # Compliance Registry mutations
+  createComplianceRegistry(
+    input: CreateComplianceRegistryInput!
+  ): CreateComplianceRegistryPayload!
+  updateComplianceRegistry(
+    input: UpdateComplianceRegistryInput!
+  ): UpdateComplianceRegistryPayload!
+  deleteComplianceRegistry(
+    input: DeleteComplianceRegistryInput!
+  ): DeleteComplianceRegistryPayload!
 }
 
 # Input Types
@@ -2372,6 +2471,40 @@ input UpdateNonconformityRegistryInput {
 
 input DeleteNonconformityRegistryInput {
   nonconformityRegistryId: ID!
+}
+
+input CreateComplianceRegistryInput {
+  organizationId: ID!
+  referenceId: String!
+  area: String
+  source: String
+  auditId: ID!
+  requirement: String
+  actionsToBeImplemented: String
+  regulator: String
+  ownerId: ID!
+  lastReviewDate: Datetime
+  dueDate: Datetime
+  status: ComplianceRegistryStatus!
+}
+
+input UpdateComplianceRegistryInput {
+  id: ID!
+  referenceId: String
+  area: String
+  source: String
+  auditId: ID
+  requirement: String
+  actionsToBeImplemented: String
+  regulator: String
+  ownerId: ID
+  lastReviewDate: Datetime
+  dueDate: Datetime
+  status: ComplianceRegistryStatus
+}
+
+input DeleteComplianceRegistryInput {
+  complianceRegistryId: ID!
 }
 
 # Payload Types
@@ -3054,4 +3187,16 @@ type UpdateNonconformityRegistryPayload {
 
 type DeleteNonconformityRegistryPayload {
   deletedNonconformityRegistryId: ID!
+}
+
+type CreateComplianceRegistryPayload {
+  complianceRegistryEdge: ComplianceRegistryEdge!
+}
+
+type UpdateComplianceRegistryPayload {
+  complianceRegistry: ComplianceRegistry!
+}
+
+type DeleteComplianceRegistryPayload {
+  deletedComplianceRegistryId: ID!
 }

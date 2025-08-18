@@ -156,8 +156,6 @@ export default function NonconformityRegistryDetailsPage(props: Props) {
       <div className="max-w-4xl">
         <Card padded>
           <form onSubmit={onSubmit} className="space-y-6">
-            <h3 className="text-lg font-medium">{__("Nonconformity Registry")}</h3>
-
             <Field
               label={__("Reference ID")}
               required

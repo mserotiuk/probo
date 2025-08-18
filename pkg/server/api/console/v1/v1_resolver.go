@@ -220,6 +220,73 @@ func (r *auditConnectionResolver) TotalCount(ctx context.Context, obj *types.Aud
 	return count, nil
 }
 
+// Organization is the resolver for the organization field.
+func (r *complianceRegistryResolver) Organization(ctx context.Context, obj *types.ComplianceRegistry) (*types.Organization, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ComplianceRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry: %w", err))
+	}
+
+	organization, err := prb.Organizations.Get(ctx, registry.OrganizationID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry organization: %w", err))
+	}
+
+	return types.NewOrganization(organization), nil
+}
+
+// Audit is the resolver for the audit field.
+func (r *complianceRegistryResolver) Audit(ctx context.Context, obj *types.ComplianceRegistry) (*types.Audit, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ComplianceRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry: %w", err))
+	}
+
+	audit, err := prb.Audits.Get(ctx, registry.AuditID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry audit: %w", err))
+	}
+
+	return types.NewAudit(audit), nil
+}
+
+// Owner is the resolver for the owner field.
+func (r *complianceRegistryResolver) Owner(ctx context.Context, obj *types.ComplianceRegistry) (*types.People, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ComplianceRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry: %w", err))
+	}
+
+	people, err := prb.Peoples.Get(ctx, registry.OwnerID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get compliance registry owner: %w", err))
+	}
+
+	return types.NewPeople(people), nil
+}
+
+// TotalCount is the resolver for the totalCount field.
+func (r *complianceRegistryConnectionResolver) TotalCount(ctx context.Context, obj *types.ComplianceRegistryConnection) (int, error) {
+	prb := r.ProboService(ctx, obj.ParentID.TenantID())
+
+	switch obj.Resolver.(type) {
+	case *organizationResolver:
+		count, err := prb.ComplianceRegistries.CountByOrganizationID(ctx, obj.ParentID)
+		if err != nil {
+			panic(fmt.Errorf("cannot count compliance registries: %w", err))
+		}
+		return count, nil
+	}
+
+	panic(fmt.Errorf("unsupported resolver: %T", obj.Resolver))
+}
+
 // Framework is the resolver for the framework field.
 func (r *controlResolver) Framework(ctx context.Context, obj *types.Control) (*types.Framework, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -2783,6 +2850,78 @@ func (r *mutationResolver) DeleteNonconformityRegistry(ctx context.Context, inpu
 	}, nil
 }
 
+// CreateComplianceRegistry is the resolver for the createComplianceRegistry field.
+func (r *mutationResolver) CreateComplianceRegistry(ctx context.Context, input types.CreateComplianceRegistryInput) (*types.CreateComplianceRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.OrganizationID.TenantID())
+
+	req := probo.CreateComplianceRegistryRequest{
+		OrganizationID:         input.OrganizationID,
+		ReferenceID:            input.ReferenceID,
+		Area:                   input.Area,
+		Source:                 input.Source,
+		AuditID:                input.AuditID,
+		Requirement:            input.Requirement,
+		ActionsToBeImplemented: input.ActionsToBeImplemented,
+		Regulator:              input.Regulator,
+		OwnerID:                input.OwnerID,
+		LastReviewDate:         input.LastReviewDate,
+		DueDate:                input.DueDate,
+		Status:                 &input.Status,
+	}
+
+	registry, err := prb.ComplianceRegistries.Create(ctx, &req)
+	if err != nil {
+		panic(fmt.Errorf("cannot create compliance registry: %w", err))
+	}
+
+	return &types.CreateComplianceRegistryPayload{
+		ComplianceRegistryEdge: types.NewComplianceRegistryEdge(registry, coredata.ComplianceRegistryOrderFieldCreatedAt),
+	}, nil
+}
+
+// UpdateComplianceRegistry is the resolver for the updateComplianceRegistry field.
+func (r *mutationResolver) UpdateComplianceRegistry(ctx context.Context, input types.UpdateComplianceRegistryInput) (*types.UpdateComplianceRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.ID.TenantID())
+
+	req := probo.UpdateComplianceRegistryRequest{
+		ID:                     input.ID,
+		ReferenceID:            input.ReferenceID,
+		Area:                   &input.Area,
+		Source:                 &input.Source,
+		AuditID:                input.AuditID,
+		Requirement:            &input.Requirement,
+		ActionsToBeImplemented: &input.ActionsToBeImplemented,
+		Regulator:              &input.Regulator,
+		OwnerID:                input.OwnerID,
+		LastReviewDate:         &input.LastReviewDate,
+		DueDate:                &input.DueDate,
+		Status:                 input.Status,
+	}
+
+	registry, err := prb.ComplianceRegistries.Update(ctx, &req)
+	if err != nil {
+		panic(fmt.Errorf("cannot update compliance registry: %w", err))
+	}
+
+	return &types.UpdateComplianceRegistryPayload{
+		ComplianceRegistry: types.NewComplianceRegistry(registry),
+	}, nil
+}
+
+// DeleteComplianceRegistry is the resolver for the deleteComplianceRegistry field.
+func (r *mutationResolver) DeleteComplianceRegistry(ctx context.Context, input types.DeleteComplianceRegistryInput) (*types.DeleteComplianceRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.ComplianceRegistryID.TenantID())
+
+	err := prb.ComplianceRegistries.Delete(ctx, input.ComplianceRegistryID)
+	if err != nil {
+		panic(fmt.Errorf("cannot delete compliance registry: %w", err))
+	}
+
+	return &types.DeleteComplianceRegistryPayload{
+		DeletedComplianceRegistryID: input.ComplianceRegistryID,
+	}, nil
+}
+
 // Organization is the resolver for the organization field.
 func (r *nonconformityRegistryResolver) Organization(ctx context.Context, obj *types.NonconformityRegistry) (*types.Organization, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -3230,6 +3369,31 @@ func (r *organizationResolver) NonconformityRegistries(ctx context.Context, obj 
 	return types.NewNonconformityRegistryConnection(page, r, obj.ID), nil
 }
 
+// ComplianceRegistries is the resolver for the complianceRegistries field.
+func (r *organizationResolver) ComplianceRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ComplianceRegistryOrderBy) (*types.ComplianceRegistryConnection, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	pageOrderBy := page.OrderBy[coredata.ComplianceRegistryOrderField]{
+		Field:     coredata.ComplianceRegistryOrderFieldCreatedAt,
+		Direction: page.OrderDirectionDesc,
+	}
+	if orderBy != nil {
+		pageOrderBy = page.OrderBy[coredata.ComplianceRegistryOrderField]{
+			Field:     orderBy.Field,
+			Direction: orderBy.Direction,
+		}
+	}
+
+	cursor := types.NewCursor(first, after, last, before, pageOrderBy)
+
+	page, err := prb.ComplianceRegistries.ListForOrganizationID(ctx, obj.ID, cursor)
+	if err != nil {
+		panic(fmt.Errorf("cannot list organization compliance registries: %w", err))
+	}
+
+	return types.NewComplianceRegistryConnection(page, r, obj.ID), nil
+}
+
 // TrustCenter is the resolver for the trustCenter field.
 func (r *organizationResolver) TrustCenter(ctx context.Context, obj *types.Organization) (*types.TrustCenter, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -3379,6 +3543,12 @@ func (r *queryResolver) Node(ctx context.Context, id gid.GID) (types.Node, error
 			panic(fmt.Errorf("cannot get nonconformity registry: %w", err))
 		}
 		return types.NewNonconformityRegistry(nonconformityRegistry), nil
+	case coredata.ComplianceRegistryEntityType:
+		complianceRegistry, err := prb.ComplianceRegistries.Get(ctx, id)
+		if err != nil {
+			panic(fmt.Errorf("cannot get compliance registry: %w", err))
+		}
+		return types.NewComplianceRegistry(complianceRegistry), nil
 	case coredata.ReportEntityType:
 		report, err := prb.Reports.Get(ctx, id)
 		if err != nil {
@@ -4077,6 +4247,16 @@ func (r *Resolver) AuditConnection() schema.AuditConnectionResolver {
 	return &auditConnectionResolver{r}
 }
 
+// ComplianceRegistry returns schema.ComplianceRegistryResolver implementation.
+func (r *Resolver) ComplianceRegistry() schema.ComplianceRegistryResolver {
+	return &complianceRegistryResolver{r}
+}
+
+// ComplianceRegistryConnection returns schema.ComplianceRegistryConnectionResolver implementation.
+func (r *Resolver) ComplianceRegistryConnection() schema.ComplianceRegistryConnectionResolver {
+	return &complianceRegistryConnectionResolver{r}
+}
+
 // Control returns schema.ControlResolver implementation.
 func (r *Resolver) Control() schema.ControlResolver { return &controlResolver{r} }
 
@@ -4218,6 +4398,8 @@ type assetResolver struct{ *Resolver }
 type assetConnectionResolver struct{ *Resolver }
 type auditResolver struct{ *Resolver }
 type auditConnectionResolver struct{ *Resolver }
+type complianceRegistryResolver struct{ *Resolver }
+type complianceRegistryConnectionResolver struct{ *Resolver }
 type controlResolver struct{ *Resolver }
 type controlConnectionResolver struct{ *Resolver }
 type datumResolver struct{ *Resolver }
