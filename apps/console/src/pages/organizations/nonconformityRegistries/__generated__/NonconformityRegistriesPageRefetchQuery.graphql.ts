@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8c45aba43e3ecb3c9e59f9fe5bb0a630>>
+ * @generated SignedSource<<9c75b7a7e17dd904d30ab786c40015d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,17 +10,19 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type RegistriesPageQuery$variables = {
-  organizationId: string;
+export type NonconformityRegistriesPageRefetchQuery$variables = {
+  after?: any | null | undefined;
+  first?: number | null | undefined;
+  id: string;
 };
-export type RegistriesPageQuery$data = {
+export type NonconformityRegistriesPageRefetchQuery$data = {
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"RegistriesPageFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"NonconformityRegistriesPageFragment">;
   };
 };
-export type RegistriesPageQuery = {
-  response: RegistriesPageQuery$data;
-  variables: RegistriesPageQuery$variables;
+export type NonconformityRegistriesPageRefetchQuery = {
+  response: NonconformityRegistriesPageRefetchQuery$data;
+  variables: NonconformityRegistriesPageRefetchQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -28,37 +30,52 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "organizationId"
+    "name": "after"
+  },
+  {
+    "defaultValue": 10,
+    "kind": "LocalArgument",
+    "name": "first"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "id"
   }
 ],
 v1 = [
   {
     "kind": "Variable",
     "name": "id",
-    "variableName": "organizationId"
+    "variableName": "id"
   }
 ],
-v2 = {
+v2 = [
+  {
+    "kind": "Variable",
+    "name": "after",
+    "variableName": "after"
+  },
+  {
+    "kind": "Variable",
+    "name": "first",
+    "variableName": "first"
+  }
+],
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 10
-  }
-],
 v5 = {
   "alias": null,
   "args": null,
@@ -71,7 +88,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "RegistriesPageQuery",
+    "name": "NonconformityRegistriesPageRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -82,16 +99,9 @@ return {
         "plural": false,
         "selections": [
           {
-            "kind": "InlineFragment",
-            "selections": [
-              {
-                "args": null,
-                "kind": "FragmentSpread",
-                "name": "RegistriesPageFragment"
-              }
-            ],
-            "type": "Organization",
-            "abstractKey": null
+            "args": (v2/*: any*/),
+            "kind": "FragmentSpread",
+            "name": "NonconformityRegistriesPageFragment"
           }
         ],
         "storageKey": null
@@ -104,7 +114,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "RegistriesPageQuery",
+    "name": "NonconformityRegistriesPageRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -114,14 +124,14 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
           (v3/*: any*/),
+          (v4/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v2/*: any*/),
                 "concreteType": "NonconformityRegistryConnection",
                 "kind": "LinkedField",
                 "name": "nonconformityRegistries",
@@ -150,7 +160,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v4/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -215,7 +225,7 @@ return {
                             "name": "audit",
                             "plural": false,
                             "selections": [
-                              (v3/*: any*/),
+                              (v4/*: any*/),
                               (v5/*: any*/),
                               {
                                 "alias": null,
@@ -225,7 +235,7 @@ return {
                                 "name": "framework",
                                 "plural": false,
                                 "selections": [
-                                  (v3/*: any*/),
+                                  (v4/*: any*/),
                                   (v5/*: any*/)
                                 ],
                                 "storageKey": null
@@ -241,7 +251,7 @@ return {
                             "name": "owner",
                             "plural": false,
                             "selections": [
-                              (v3/*: any*/),
+                              (v4/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -266,7 +276,7 @@ return {
                             "name": "updatedAt",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v3/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -318,11 +328,11 @@ return {
                     ]
                   }
                 ],
-                "storageKey": "nonconformityRegistries(first:10)"
+                "storageKey": null
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v2/*: any*/),
                 "filters": null,
                 "handle": "connection",
                 "key": "RegistriesPage_nonconformityRegistries",
@@ -339,16 +349,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "738deaeb3219a79ae2ba0957d37aeb32",
+    "cacheID": "c8a903834590297e238ea54aeea0dfbe",
     "id": null,
     "metadata": {},
-    "name": "RegistriesPageQuery",
+    "name": "NonconformityRegistriesPageRefetchQuery",
     "operationKind": "query",
-    "text": "query RegistriesPageQuery(\n  $organizationId: ID!\n) {\n  node(id: $organizationId) {\n    __typename\n    ... on Organization {\n      ...RegistriesPageFragment\n    }\n    id\n  }\n}\n\nfragment RegistriesPageFragment on Organization {\n  id\n  nonconformityRegistries(first: 10) {\n    totalCount\n    edges {\n      node {\n        id\n        referenceId\n        description\n        status\n        dateIdentified\n        dueDate\n        rootCause\n        correctiveAction\n        effectivenessCheck\n        audit {\n          id\n          name\n          framework {\n            id\n            name\n          }\n        }\n        owner {\n          id\n          fullName\n        }\n        createdAt\n        updatedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+    "text": "query NonconformityRegistriesPageRefetchQuery(\n  $after: CursorKey\n  $first: Int = 10\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...NonconformityRegistriesPageFragment_2HEEH6\n    id\n  }\n}\n\nfragment NonconformityRegistriesPageFragment_2HEEH6 on Organization {\n  id\n  nonconformityRegistries(first: $first, after: $after) {\n    totalCount\n    edges {\n      node {\n        id\n        referenceId\n        description\n        status\n        dateIdentified\n        dueDate\n        rootCause\n        correctiveAction\n        effectivenessCheck\n        audit {\n          id\n          name\n          framework {\n            id\n            name\n          }\n        }\n        owner {\n          id\n          fullName\n        }\n        createdAt\n        updatedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "663123fc3652212b1b9e3fecac857d67";
+(node as any).hash = "34c06ec98cb50738cf479e6bd7cdc83e";
 
 export default node;

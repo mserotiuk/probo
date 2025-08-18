@@ -29,21 +29,21 @@ import { useOrganizationId } from "/hooks/useOrganizationId";
 import { CreateNonconformityRegistryDialog } from "./dialogs/CreateNonconformityRegistryDialog";
 import { deleteNonconformityRegistryMutation, RegistriesConnectionKey } from "../../../hooks/graph/NonconformityRegistryGraph";
 import { sprintf, promisifyMutation, getStatusVariant, getStatusLabel } from "@probo/helpers";
-import type { RegistriesPageQuery } from "./__generated__/RegistriesPageQuery.graphql";
+import type { NonconformityRegistriesPageQuery } from "./__generated__/NonconformityRegistriesPageQuery.graphql";
 import type {
-  RegistriesPageFragment$key,
-  RegistriesPageFragment$data,
-} from "./__generated__/RegistriesPageFragment.graphql";
+  NonconformityRegistriesPageFragment$key,
+  NonconformityRegistriesPageFragment$data,
+} from "./__generated__/NonconformityRegistriesPageFragment.graphql";
 
-type NonconformityRegistry = RegistriesPageFragment$data['nonconformityRegistries']['edges'][number]['node'];
+type NonconformityRegistry = NonconformityRegistriesPageFragment$data['nonconformityRegistries']['edges'][number]['node'];
 
 interface NonconformityRegistriesPageProps {
-  queryRef: PreloadedQuery<RegistriesPageQuery>;
+  queryRef: PreloadedQuery<NonconformityRegistriesPageQuery>;
 }
 
-const registriesPageFragment = graphql`
-  fragment RegistriesPageFragment on Organization
-  @refetchable(queryName: "RegistriesPageRefetchQuery")
+const nonconformityRegistriesPageFragment = graphql`
+  fragment NonconformityRegistriesPageFragment on Organization
+  @refetchable(queryName: "NonconformityRegistriesPageRefetchQuery")
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 10 }
     after: { type: "CursorKey" }
@@ -96,10 +96,10 @@ export default function NonconformityRegistriesPage({ queryRef }: NonconformityR
 
   const organization = usePreloadedQuery(
     graphql`
-      query RegistriesPageQuery($organizationId: ID!) {
+      query NonconformityRegistriesPageQuery($organizationId: ID!) {
         node(id: $organizationId) {
           ... on Organization {
-            ...RegistriesPageFragment
+            ...NonconformityRegistriesPageFragment
           }
         }
       }
@@ -108,8 +108,8 @@ export default function NonconformityRegistriesPage({ queryRef }: NonconformityR
   );
 
   const { data: registriesData, loadNext, hasNext } = usePaginationFragment(
-    registriesPageFragment,
-    organization.node as RegistriesPageFragment$key
+    nonconformityRegistriesPageFragment,
+    organization.node as NonconformityRegistriesPageFragment$key
   );
 
   const connectionId = ConnectionHandler.getConnectionID(organizationId, RegistriesConnectionKey);

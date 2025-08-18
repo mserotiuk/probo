@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<662110a9800f0ef9f952778126fdbd96>>
+ * @generated SignedSource<<b883180c6334c3e1c4f7bd44785a0033>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 export type NonconformityRegistryStatus = "CLOSED" | "IN_PROGRESS" | "OPEN";
 import { FragmentRefs } from "relay-runtime";
-export type RegistriesPageFragment$data = {
+export type NonconformityRegistriesPageFragment$data = {
   readonly id: string;
   readonly nonconformityRegistries: {
     readonly __id: string;
@@ -48,14 +48,14 @@ export type RegistriesPageFragment$data = {
     };
     readonly totalCount: number;
   };
-  readonly " $fragmentType": "RegistriesPageFragment";
+  readonly " $fragmentType": "NonconformityRegistriesPageFragment";
 };
-export type RegistriesPageFragment$key = {
-  readonly " $data"?: RegistriesPageFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"RegistriesPageFragment">;
+export type NonconformityRegistriesPageFragment$key = {
+  readonly " $data"?: NonconformityRegistriesPageFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"NonconformityRegistriesPageFragment">;
 };
 
-import RegistriesPageRefetchQuery_graphql from './RegistriesPageRefetchQuery.graphql';
+import NonconformityRegistriesPageRefetchQuery_graphql from './NonconformityRegistriesPageRefetchQuery.graphql';
 
 const node: ReaderFragment = (function(){
 var v0 = [
@@ -110,14 +110,14 @@ return {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": RegistriesPageRefetchQuery_graphql,
+      "operation": NonconformityRegistriesPageRefetchQuery_graphql,
       "identifierInfo": {
         "identifierField": "id",
         "identifierQueryVariableName": "id"
       }
     }
   },
-  "name": "RegistriesPageFragment",
+  "name": "NonconformityRegistriesPageFragment",
   "selections": [
     (v1/*: any*/),
     {
@@ -333,6 +333,6 @@ return {
 };
 })();
 
-(node as any).hash = "c582c6c8fa10073ddc1ad8dc33939a1f";
+(node as any).hash = "34c06ec98cb50738cf479e6bd7cdc83e";
 
 export default node;

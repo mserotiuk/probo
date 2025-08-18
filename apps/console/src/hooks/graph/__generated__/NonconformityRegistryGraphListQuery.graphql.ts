@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a023a856e21a5db125c12185ae6a6009>>
+ * @generated SignedSource<<a6972659c0399779d3d646dc4057bc57>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type NonconformityRegistryGraphListQuery$variables = {
 };
 export type NonconformityRegistryGraphListQuery$data = {
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"RegistriesPageFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"NonconformityRegistriesPageFragment">;
   };
 };
 export type NonconformityRegistryGraphListQuery = {
@@ -87,7 +87,7 @@ return {
               {
                 "args": null,
                 "kind": "FragmentSpread",
-                "name": "RegistriesPageFragment"
+                "name": "NonconformityRegistriesPageFragment"
               }
             ],
             "type": "Organization",
@@ -339,16 +339,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c46e924846c9edfbc065055ee875c979",
+    "cacheID": "2196012e8a68c64e7d479a2b85021ffd",
     "id": null,
     "metadata": {},
     "name": "NonconformityRegistryGraphListQuery",
     "operationKind": "query",
-    "text": "query NonconformityRegistryGraphListQuery(\n  $organizationId: ID!\n) {\n  node(id: $organizationId) {\n    __typename\n    ... on Organization {\n      ...RegistriesPageFragment\n    }\n    id\n  }\n}\n\nfragment RegistriesPageFragment on Organization {\n  id\n  nonconformityRegistries(first: 10) {\n    totalCount\n    edges {\n      node {\n        id\n        referenceId\n        description\n        status\n        dateIdentified\n        dueDate\n        rootCause\n        correctiveAction\n        effectivenessCheck\n        audit {\n          id\n          name\n          framework {\n            id\n            name\n          }\n        }\n        owner {\n          id\n          fullName\n        }\n        createdAt\n        updatedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+    "text": "query NonconformityRegistryGraphListQuery(\n  $organizationId: ID!\n) {\n  node(id: $organizationId) {\n    __typename\n    ... on Organization {\n      ...NonconformityRegistriesPageFragment\n    }\n    id\n  }\n}\n\nfragment NonconformityRegistriesPageFragment on Organization {\n  id\n  nonconformityRegistries(first: 10) {\n    totalCount\n    edges {\n      node {\n        id\n        referenceId\n        description\n        status\n        dateIdentified\n        dueDate\n        rootCause\n        correctiveAction\n        effectivenessCheck\n        audit {\n          id\n          name\n          framework {\n            id\n            name\n          }\n        }\n        owner {\n          id\n          fullName\n        }\n        createdAt\n        updatedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "eb05763f0b78e8a91640f863bc335378";
+(node as any).hash = "b8104dc2e4ccb9eecfe1f0d494084975";
 
 export default node;

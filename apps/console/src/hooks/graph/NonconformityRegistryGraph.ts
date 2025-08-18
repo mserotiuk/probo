@@ -11,7 +11,7 @@ export const nonconformityRegistriesQuery = graphql`
   query NonconformityRegistryGraphListQuery($organizationId: ID!) {
     node(id: $organizationId) {
       ... on Organization {
-        ...RegistriesPageFragment
+        ...NonconformityRegistriesPageFragment
       }
     }
   }
