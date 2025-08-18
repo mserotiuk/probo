@@ -342,6 +342,20 @@ enum VendorContactOrderField
     )
 }
 
+enum VendorServiceOrderField
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/coredata.VendorServiceOrderField"
+  ) {
+  CREATED_AT
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.VendorServiceOrderFieldCreatedAt"
+    )
+  NAME
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.VendorServiceOrderFieldName"
+    )
+}
+
 enum OrganizationOrderField
   @goModel(
     model: "github.com/getprobo/probo/pkg/coredata.OrganizationOrderField"
@@ -801,6 +815,14 @@ input VendorContactOrder
   field: VendorContactOrderField!
 }
 
+input VendorServiceOrder
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.VendorServiceOrderBy"
+  ) {
+  direction: OrderDirection!
+  field: VendorServiceOrderField!
+}
+
 input OrganizationOrder {
   direction: OrderDirection!
   field: OrganizationOrderField!
@@ -1064,6 +1086,14 @@ type Vendor implements Node {
     orderBy: VendorContactOrder
   ): VendorContactConnection! @goField(forceResolver: true)
 
+  services(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: VendorServiceOrder
+  ): VendorServiceConnection! @goField(forceResolver: true)
+
   riskAssessments(
     first: Int
     after: CursorKey
@@ -1124,6 +1154,15 @@ type VendorContact implements Node {
   email: String
   phone: String
   role: String
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
+type VendorService implements Node {
+  id: ID!
+  vendor: Vendor! @goField(forceResolver: true)
+  name: String!
+  description: String
   createdAt: Datetime!
   updatedAt: Datetime!
 }
@@ -1652,6 +1691,16 @@ type VendorContactEdge {
   node: VendorContact!
 }
 
+type VendorServiceConnection {
+  edges: [VendorServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type VendorServiceEdge {
+  cursor: CursorKey!
+  node: VendorService!
+}
+
 type ConnectorConnection {
   edges: [ConnectorEdge!]!
   pageInfo: PageInfo!
@@ -1795,6 +1844,11 @@ type Mutation {
   createVendorContact(input: CreateVendorContactInput!): CreateVendorContactPayload!
   updateVendorContact(input: UpdateVendorContactInput!): UpdateVendorContactPayload!
   deleteVendorContact(input: DeleteVendorContactInput!): DeleteVendorContactPayload!
+
+  # Vendor Service mutations
+  createVendorService(input: CreateVendorServiceInput!): CreateVendorServicePayload!
+  updateVendorService(input: UpdateVendorServiceInput!): UpdateVendorServicePayload!
+  deleteVendorService(input: DeleteVendorServiceInput!): DeleteVendorServicePayload!
 
   # Framework mutations
   createFramework(input: CreateFrameworkInput!): CreateFrameworkPayload!
@@ -2087,6 +2141,26 @@ input UpdateVendorContactInput {
 
 input DeleteVendorContactInput {
   vendorContactId: ID!
+}
+
+input CreateVendorServiceInput {
+  vendorId: ID!
+  name: String!
+  description: String
+  url: String
+  type: String
+}
+
+input UpdateVendorServiceInput {
+  id: ID!
+  name: String
+  description: String
+  url: String
+  type: String
+}
+
+input DeleteVendorServiceInput {
+  vendorServiceId: ID!
 }
 
 input CreatePeopleInput {
@@ -2568,6 +2642,18 @@ type UpdateVendorContactPayload {
 
 type DeleteVendorContactPayload {
   deletedVendorContactId: ID!
+}
+
+type CreateVendorServicePayload {
+  vendorServiceEdge: VendorServiceEdge!
+}
+
+type UpdateVendorServicePayload {
+  vendorService: VendorService!
+}
+
+type DeleteVendorServicePayload {
+  deletedVendorServiceId: ID!
 }
 
 type CreatePeoplePayload {

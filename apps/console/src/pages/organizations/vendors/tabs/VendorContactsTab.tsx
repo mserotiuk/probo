@@ -120,7 +120,6 @@ export default function VendorContactsTab() {
             <SortableTh field="EMAIL">{__("Email")}</SortableTh>
             <Th>{__("Phone")}</Th>
             <Th>{__("Role")}</Th>
-            <SortableTh field="CREATED_AT">{__("Created")}</SortableTh>
             <Th>{__("Actions")}</Th>
           </Tr>
         </Thead>
@@ -165,7 +164,6 @@ function ContactRow(props: ContactRowProps) {
     contactFragment,
     props.contactKey
   );
-  const { dateFormat } = useTranslate();
   const confirm = useConfirm();
   const [deleteContact] = useMutationWithToasts(deleteContactMutation, {
     successMessage: __("Contact deleted successfully"),
@@ -222,7 +220,6 @@ function ContactRow(props: ContactRowProps) {
         )}
       </Td>
       <Td>{contact.role || __("—")}</Td>
-      <Td>{dateFormat(contact.createdAt)}</Td>
       <Td width={50} className="text-end">
         <ActionDropdown>
           <DropdownItem

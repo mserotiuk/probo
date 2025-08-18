@@ -117,6 +117,11 @@ export default function VendorDetailPage(props: Props) {
         >
           {__("Contacts")}
         </TabLink>
+        <TabLink
+          to={`/organizations/${organizationId}/vendors/${vendor.id}/services`}
+        >
+          {__("Services")}
+        </TabLink>
       </Tabs>
 
       <Outlet context={{ vendor, peopleId: data.viewer.user.people!.id }} />

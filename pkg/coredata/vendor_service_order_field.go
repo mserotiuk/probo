@@ -14,36 +14,38 @@
 
 package coredata
 
-const (
-	OrganizationEntityType uint16 = iota
-	FrameworkEntityType
-	MeasureEntityType
-	TaskEntityType
-	EvidenceEntityType
-	ConnectorEntityType
-	VendorRiskAssessmentEntityType
-	VendorEntityType
-	PeopleEntityType
-	VendorComplianceReportEntityType
-	DocumentEntityType
-	UserEntityType
-	SessionEntityType
-	EmailEntityType
-	ControlEntityType
-	RiskEntityType
-	DocumentVersionEntityType
-	DocumentVersionSignatureEntityType
-	AssetEntityType
-	DatumEntityType
-	AuditEntityType
-	ReportEntityType
-	TrustCenterEntityType
-	TrustCenterAccessEntityType
-	VendorBusinessAssociateAgreementEntityType
-	FileEntityType
-	VendorContactEntityType
-	VendorDataPrivacyAgreementEntityType
-	NonconformityRegistryEntityType
-	ComplianceRegistryEntityType
-	VendorServiceEntityType
+import (
+	"fmt"
 )
+
+type (
+	VendorServiceOrderField string
+)
+
+const (
+	VendorServiceOrderFieldCreatedAt VendorServiceOrderField = "CREATED_AT"
+	VendorServiceOrderFieldName      VendorServiceOrderField = "NAME"
+)
+
+func (p VendorServiceOrderField) Column() string {
+	return string(p)
+}
+
+func (p VendorServiceOrderField) String() string {
+	return string(p)
+}
+
+func (p VendorServiceOrderField) MarshalText() ([]byte, error) {
+	return []byte(p.String()), nil
+}
+
+func (p *VendorServiceOrderField) UnmarshalText(text []byte) error {
+	val := string(text)
+	switch val {
+	case string(VendorServiceOrderFieldCreatedAt),
+		string(VendorServiceOrderFieldName):
+		*p = VendorServiceOrderField(val)
+		return nil
+	}
+	return fmt.Errorf("invalid VendorServiceOrderField value: %q", val)
+}

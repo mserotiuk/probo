@@ -1430,6 +1430,60 @@ func (r *mutationResolver) DeleteVendorContact(ctx context.Context, input types.
 	}, nil
 }
 
+// CreateVendorService is the resolver for the createVendorService field.
+func (r *mutationResolver) CreateVendorService(ctx context.Context, input types.CreateVendorServiceInput) (*types.CreateVendorServicePayload, error) {
+	prb := r.ProboService(ctx, input.VendorID.TenantID())
+
+	req := probo.CreateVendorServiceRequest{
+		VendorID:    input.VendorID,
+		Name:        input.Name,
+		Description: input.Description,
+	}
+
+	vendorService, err := prb.VendorServices.Create(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create vendor service: %w", err)
+	}
+
+	return &types.CreateVendorServicePayload{
+		VendorServiceEdge: types.NewVendorServiceEdge(vendorService, coredata.VendorServiceOrderFieldCreatedAt),
+	}, nil
+}
+
+// UpdateVendorService is the resolver for the updateVendorService field.
+func (r *mutationResolver) UpdateVendorService(ctx context.Context, input types.UpdateVendorServiceInput) (*types.UpdateVendorServicePayload, error) {
+	prb := r.ProboService(ctx, input.ID.TenantID())
+
+	req := probo.UpdateVendorServiceRequest{
+		ID:          input.ID,
+		Name:        input.Name,
+		Description: &input.Description,
+	}
+
+	vendorService, err := prb.VendorServices.Update(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update vendor service: %w", err)
+	}
+
+	return &types.UpdateVendorServicePayload{
+		VendorService: types.NewVendorService(vendorService),
+	}, nil
+}
+
+// DeleteVendorService is the resolver for the deleteVendorService field.
+func (r *mutationResolver) DeleteVendorService(ctx context.Context, input types.DeleteVendorServiceInput) (*types.DeleteVendorServicePayload, error) {
+	prb := r.ProboService(ctx, input.VendorServiceID.TenantID())
+
+	err := prb.VendorServices.Delete(ctx, input.VendorServiceID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete vendor service: %w", err)
+	}
+
+	return &types.DeleteVendorServicePayload{
+		DeletedVendorServiceID: input.VendorServiceID,
+	}, nil
+}
+
 // CreateFramework is the resolver for the createFramework field.
 func (r *mutationResolver) CreateFramework(ctx context.Context, input types.CreateFrameworkInput) (*types.CreateFrameworkPayload, error) {
 	prb := r.ProboService(ctx, input.OrganizationID.TenantID())
@@ -3507,6 +3561,12 @@ func (r *queryResolver) Node(ctx context.Context, id gid.GID) (types.Node, error
 			panic(fmt.Errorf("cannot get vendor contact: %w", err))
 		}
 		return types.NewVendorContact(vendorContact), nil
+	case coredata.VendorServiceEntityType:
+		vendorService, err := prb.VendorServices.Get(ctx, id)
+		if err != nil {
+			panic(fmt.Errorf("cannot get vendor service: %w", err))
+		}
+		return types.NewVendorService(vendorService), nil
 	case coredata.DocumentVersionEntityType:
 		documentVersion, err := prb.Documents.GetVersion(ctx, id)
 		if err != nil {
@@ -3993,6 +4053,31 @@ func (r *vendorResolver) Contacts(ctx context.Context, obj *types.Vendor, first 
 	return types.NewVendorContactConnection(page), nil
 }
 
+// Services is the resolver for the services field.
+func (r *vendorResolver) Services(ctx context.Context, obj *types.Vendor, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.VendorServiceOrderBy) (*types.VendorServiceConnection, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	pageOrderBy := page.OrderBy[coredata.VendorServiceOrderField]{
+		Field:     coredata.VendorServiceOrderFieldCreatedAt,
+		Direction: page.OrderDirectionDesc,
+	}
+	if orderBy != nil {
+		pageOrderBy = page.OrderBy[coredata.VendorServiceOrderField]{
+			Field:     orderBy.Field,
+			Direction: orderBy.Direction,
+		}
+	}
+
+	cursor := types.NewCursor(first, after, last, before, pageOrderBy)
+
+	page, err := prb.VendorServices.List(ctx, obj.ID, cursor)
+	if err != nil {
+		panic(fmt.Errorf("failed to list vendor services: %w", err))
+	}
+
+	return types.NewVendorServiceConnection(page), nil
+}
+
 // RiskAssessments is the resolver for the riskAssessments field.
 func (r *vendorResolver) RiskAssessments(ctx context.Context, obj *types.Vendor, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.VendorRiskAssessmentOrder) (*types.VendorRiskAssessmentConnection, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -4206,6 +4291,24 @@ func (r *vendorRiskAssessmentResolver) AssessedBy(ctx context.Context, obj *type
 	return types.NewPeople(people), nil
 }
 
+// Vendor is the resolver for the vendor field.
+func (r *vendorServiceResolver) Vendor(ctx context.Context, obj *types.VendorService) (*types.Vendor, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	// Get the vendor service to access the VendorID
+	vendorService, err := prb.VendorServices.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("failed to get vendor service: %w", err))
+	}
+
+	vendor, err := prb.Vendors.Get(ctx, vendorService.VendorID)
+	if err != nil {
+		panic(fmt.Errorf("failed to get vendor: %w", err))
+	}
+
+	return types.NewVendor(vendor), nil
+}
+
 // Organizations is the resolver for the organizations field.
 func (r *viewerResolver) Organizations(ctx context.Context, obj *types.Viewer, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.OrganizationOrder, filter *types.OrganizationFilter) (*types.OrganizationConnection, error) {
 	user := UserFromContext(ctx)
@@ -4391,6 +4494,9 @@ func (r *Resolver) VendorRiskAssessment() schema.VendorRiskAssessmentResolver {
 	return &vendorRiskAssessmentResolver{r}
 }
 
+// VendorService returns schema.VendorServiceResolver implementation.
+func (r *Resolver) VendorService() schema.VendorServiceResolver { return &vendorServiceResolver{r} }
+
 // Viewer returns schema.ViewerResolver implementation.
 func (r *Resolver) Viewer() schema.ViewerResolver { return &viewerResolver{r} }
 
@@ -4434,4 +4540,5 @@ type vendorConnectionResolver struct{ *Resolver }
 type vendorContactResolver struct{ *Resolver }
 type vendorDataPrivacyAgreementResolver struct{ *Resolver }
 type vendorRiskAssessmentResolver struct{ *Resolver }
+type vendorServiceResolver struct{ *Resolver }
 type viewerResolver struct{ *Resolver }

@@ -153,6 +153,7 @@ export const vendorNodeQuery = graphql`
         ...useVendorFormFragment
         ...VendorComplianceTabFragment
         ...VendorContactsTabFragment
+        ...VendorServicesTabFragment
         ...VendorRiskAssessmentTabFragment
         ...VendorOverviewTabBusinessAssociateAgreementFragment
         ...VendorOverviewTabDataPrivacyAgreementFragment

@@ -69,6 +69,14 @@ export const vendorRoutes = [
             import("../pages/organizations/vendors/tabs/VendorContactsTab")
         ),
       },
+      {
+        path: "services",
+        fallback: LinkCardSkeleton,
+        Component: lazy(
+          () =>
+            import("../pages/organizations/vendors/tabs/VendorServicesTab")
+        ),
+      },
     ],
   },
 ] satisfies AppRoute[];

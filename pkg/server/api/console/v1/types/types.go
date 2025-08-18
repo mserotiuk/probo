@@ -505,6 +505,18 @@ type CreateVendorRiskAssessmentPayload struct {
 	VendorRiskAssessmentEdge *VendorRiskAssessmentEdge `json:"vendorRiskAssessmentEdge"`
 }
 
+type CreateVendorServiceInput struct {
+	VendorID    gid.GID `json:"vendorId"`
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+	URL         *string `json:"url,omitempty"`
+	Type        *string `json:"type,omitempty"`
+}
+
+type CreateVendorServicePayload struct {
+	VendorServiceEdge *VendorServiceEdge `json:"vendorServiceEdge"`
+}
+
 type Datum struct {
 	ID                 gid.GID                     `json:"id"`
 	Name               string                      `json:"name"`
@@ -748,6 +760,14 @@ type DeleteVendorInput struct {
 
 type DeleteVendorPayload struct {
 	DeletedVendorID gid.GID `json:"deletedVendorId"`
+}
+
+type DeleteVendorServiceInput struct {
+	VendorServiceID gid.GID `json:"vendorServiceId"`
+}
+
+type DeleteVendorServicePayload struct {
+	DeletedVendorServiceID gid.GID `json:"deletedVendorServiceId"`
 }
 
 type Document struct {
@@ -1519,6 +1539,18 @@ type UpdateVendorPayload struct {
 	Vendor *Vendor `json:"vendor"`
 }
 
+type UpdateVendorServiceInput struct {
+	ID          gid.GID `json:"id"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+	URL         *string `json:"url,omitempty"`
+	Type        *string `json:"type,omitempty"`
+}
+
+type UpdateVendorServicePayload struct {
+	VendorService *VendorService `json:"vendorService"`
+}
+
 type UploadAuditReportInput struct {
 	AuditID gid.GID        `json:"auditId"`
 	File    graphql.Upload `json:"file"`
@@ -1614,6 +1646,7 @@ type Vendor struct {
 	BusinessAssociateAgreement    *VendorBusinessAssociateAgreement `json:"businessAssociateAgreement,omitempty"`
 	DataPrivacyAgreement          *VendorDataPrivacyAgreement       `json:"dataPrivacyAgreement,omitempty"`
 	Contacts                      *VendorContactConnection          `json:"contacts"`
+	Services                      *VendorServiceConnection          `json:"services"`
 	RiskAssessments               *VendorRiskAssessmentConnection   `json:"riskAssessments"`
 	BusinessOwner                 *People                           `json:"businessOwner,omitempty"`
 	SecurityOwner                 *People                           `json:"securityOwner,omitempty"`
@@ -1751,6 +1784,28 @@ type VendorRiskAssessmentEdge struct {
 type VendorRiskAssessmentOrder struct {
 	Field     coredata.VendorRiskAssessmentOrderField `json:"field"`
 	Direction page.OrderDirection                     `json:"direction"`
+}
+
+type VendorService struct {
+	ID          gid.GID   `json:"id"`
+	Vendor      *Vendor   `json:"vendor"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+func (VendorService) IsNode()             {}
+func (this VendorService) GetID() gid.GID { return this.ID }
+
+type VendorServiceConnection struct {
+	Edges    []*VendorServiceEdge `json:"edges"`
+	PageInfo *PageInfo            `json:"pageInfo"`
+}
+
+type VendorServiceEdge struct {
+	Cursor page.CursorKey `json:"cursor"`
+	Node   *VendorService `json:"node"`
 }
 
 type Viewer struct {
