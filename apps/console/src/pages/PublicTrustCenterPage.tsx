@@ -159,7 +159,11 @@ function PublicTrustCenterContent() {
   }
 
   if (loading) {
-    return <Spinner />;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {
