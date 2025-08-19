@@ -18,6 +18,7 @@ import { useFormWithSchema } from "/hooks/useFormWithSchema";
 import { z } from "zod";
 import { useMutationWithToasts } from "/hooks/useMutationWithToasts";
 import { ControlledSelect } from "/components/form/ControlledField";
+import { useEffect, useMemo } from "react";
 
 type Props = {
   children: ReactNode;
@@ -91,15 +92,22 @@ export function FrameworkControlDialog(props: Props) {
         successMessage: __("Control created successfully."),
         errorMessage: __("Failed to create control. Please try again."),
       });
+
+  const defaultValues = useMemo(() => ({
+    name: frameworkControl?.name ?? "",
+    description: frameworkControl?.description ?? "",
+    sectionTitle: frameworkControl?.sectionTitle ?? "",
+    status: frameworkControl?.status ?? "INCLUDED",
+    exclusionJustification: frameworkControl?.exclusionJustification ?? "",
+  }), [frameworkControl]);
+
   const { control, handleSubmit, register, reset, watch } = useFormWithSchema(schema, {
-    defaultValues: {
-      name: frameworkControl?.name ?? "",
-      description: frameworkControl?.description ?? "",
-      sectionTitle: frameworkControl?.sectionTitle ?? "",
-      status: frameworkControl?.status ?? "INCLUDED",
-      exclusionJustification: frameworkControl?.exclusionJustification ?? "",
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const statusValue = watch("status");
   const showExclusionJustification = statusValue === "EXCLUDED";
@@ -147,7 +155,7 @@ export function FrameworkControlDialog(props: Props) {
         <Breadcrumb
           items={[
             __("Controls"),
-            control ? __("Edit Control") : __("New Control"),
+            frameworkControl ? __("Edit Control") : __("New Control"),
           ]}
         />
       }
