@@ -75,14 +75,17 @@ services:
       - "./compose/tempo/tempo.yaml:/etc/tempo.yaml:ro"
       - "tempo-data:/var/tempo:rw"
 
-  mailhog:
-    image: "mailhog/mailhog:latest"
-    platform: linux/amd64 
+  mailpit:
+    image: "axllent/mailpit:latest"
     ports:
       - "1025:1025" # SMTP server
       - "8025:8025" # Web UI
     environment:
-      - MH_STORAGE=memory
+      - "MP_DISABLE_VERSION_CHECK=true"
+      - "MP_VERBOSE=false"
+      - "MP_SMTP_AUTH_ACCEPT_ANY=true"
+      - "MP_ENABLE_PROMETHEUS=true"
+      - "MP_SMTP_AUTH_ALLOW_INSECURE=true"
 
   chrome:
     image: "chromedp/headless-shell:140.0.7259.2"
