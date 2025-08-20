@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.49.0]
+
+### Added
+- Add nonconformity registries
+
+### Fixed
+- Fix trust center dark mode
+
 ## [0.48.1]
 
 ### Fixed
