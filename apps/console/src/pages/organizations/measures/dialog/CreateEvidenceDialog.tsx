@@ -98,7 +98,7 @@ function EvidenceUpload({ measureId, connectionId }: Omit<Props, "ref">) {
       <DialogContent padded>
         <Dropzone
           description={__(
-            "Only PDF, DOCX, XLSX, PPTX, JPG, PNG, WEBP, URI files up to 10MB are allowed",
+            "Only PDF, DOCX, XLSX, PPTX, JPG, PNG, WEBP, URI files up to 10MB are allowed"
           )}
           isUploading={isUpdating}
           onDrop={handleDrop}
@@ -115,7 +115,7 @@ function EvidenceUpload({ measureId, connectionId }: Omit<Props, "ref">) {
             "image/png": [".png"],
             "image/webp": [".webp"],
           }}
-          maxSize={10}
+          maxSize={20}
         />
       </DialogContent>
     </>
@@ -136,7 +136,7 @@ function EvidenceLink({ measureId, connectionId, ref }: Props) {
         name: "",
         url: "",
       },
-    },
+    }
   );
 
   const [mutate] = useMutationWithToasts(uploadEvidenceMutation, {
