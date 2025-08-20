@@ -97,7 +97,7 @@ export function PublicTrustCenterVendors({ vendors, organizationName }: Props) {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline"
+                      className="text-txt-info hover:opacity-80 underline transition-opacity"
                     >
                       {getCleanUrl(url)}
                     </a>

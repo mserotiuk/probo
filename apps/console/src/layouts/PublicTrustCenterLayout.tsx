@@ -30,8 +30,8 @@ export function PublicTrustCenterLayout({ organizationName, organizationLogo, ch
   };
 
   return (
-    <div className="min-h-screen bg-tertiary">
-      <header className="bg-surface border-b border-border-solid">
+    <div className="min-h-screen bg-level-0">
+      <header className="bg-level-1 border-b border-border-solid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
