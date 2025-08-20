@@ -17,13 +17,18 @@ export function PublicTrustCenterLayout({ organizationName, organizationLogo, ch
 
     const handleLogout = async () => {
     try {
-      await fetch(buildEndpoint('/api/trust/v1/auth/logout'), {
+      const response = await fetch(buildEndpoint('/api/trust/v1/auth/logout'), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
       });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
       window.location.reload();
     } catch (error) {
       toast({

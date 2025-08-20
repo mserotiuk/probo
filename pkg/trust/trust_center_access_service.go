@@ -102,6 +102,9 @@ func (s TrustCenterAccessService) Create(
 		err := existingAccess.LoadByTrustCenterIDAndEmail(ctx, tx, s.svc.scope, req.TrustCenterID, req.Email)
 
 		if err == nil {
+			if existingAccess.Active {
+				return fmt.Errorf("active trust center access already exists for this email")
+			}
 			if err := existingAccess.Delete(ctx, tx, s.svc.scope); err != nil {
 				return fmt.Errorf("cannot delete existing trust center access: %w", err)
 			}

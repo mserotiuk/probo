@@ -13,26 +13,11 @@ import {
 import { useTranslate } from "@probo/i18n";
 import { sprintf } from "@probo/helpers";
 import { FrameworkLogo } from "/components/FrameworkLogo";
-import { TrustCenterAccessRequestDialog } from "./TrustCenterAccessRequestDialog";
-
-type Audit = {
-  id: string;
-  framework: {
-    name: string;
-  };
-  validFrom: string;
-  validUntil: string | null;
-  state: string;
-  createdAt: string;
-  report: {
-    id: string;
-    filename: string;
-    downloadUrl: string | null;
-  } | null;
-};
+import { PublicTrustCenterAccessRequestDialog } from "./PublicTrustCenterAccessRequestDialog";
+import type { TrustCenterAudit } from "../pages/PublicTrustCenterPage";
 
 type Props = {
-  audits: Audit[];
+  audits: TrustCenterAudit[];
   organizationName: string;
   isAuthenticated: boolean;
   trustCenterId: string;
@@ -105,7 +90,7 @@ export function PublicTrustCenterAudits({
                       {__("No report")}
                     </span>
                   ) : !isAuthenticated ? (
-                    <TrustCenterAccessRequestDialog
+                    <PublicTrustCenterAccessRequestDialog
                       trigger={
                         <Button
                           variant="secondary"

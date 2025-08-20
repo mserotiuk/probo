@@ -13,45 +13,26 @@ import {
   useToast,
 } from "@probo/ui";
 import { useTranslate } from "@probo/i18n";
-import { buildEndpoint } from "/providers/RelayProviders";
-import { TrustCenterAccessRequestDialog } from "./TrustCenterAccessRequestDialog";
+import { useMutation, graphql } from "react-relay";
+import { PublicTrustCenterAccessRequestDialog } from "./PublicTrustCenterAccessRequestDialog";
+import type { PublicTrustCenterDocumentsExportPDFMutation } from "./__generated__/PublicTrustCenterDocumentsExportPDFMutation.graphql";
+import type { TrustCenterDocument } from "../pages/PublicTrustCenterPage";
 
-const exportDocumentPDFMutation = {
-  params: {
-    name: "PublicTrustCenterDocumentsExportPDFMutation",
-    operationKind: "mutation",
-    text: `
-      mutation PublicTrustCenterDocumentsExportPDFMutation(
-        $input: ExportDocumentPDFInput!
-      ) {
-        exportDocumentPDF(input: $input) {
-          data
-        }
-      }
-    `
+const ExportDocumentPDFMutation = graphql`
+  mutation PublicTrustCenterDocumentsExportPDFMutation(
+    $input: ExportDocumentPDFInput!
+  ) {
+    exportDocumentPDF(input: $input) {
+      data
+    }
   }
-};
-
-type Document = {
-  id: string;
-  title: string;
-  documentType: string;
-};
+`;
 
 type Props = {
-  documents: Document[];
+  documents: TrustCenterDocument[];
   isAuthenticated: boolean;
   trustCenterId: string;
   organizationName: string;
-};
-
-type ExportDocumentPDFResponse = {
-  data?: {
-    exportDocumentPDF?: {
-      data: string;
-    };
-  };
-  errors?: Array<{ message: string }>;
 };
 
 export function PublicTrustCenterDocuments({
@@ -63,43 +44,31 @@ export function PublicTrustCenterDocuments({
   const { __ } = useTranslate();
   const { toast } = useToast();
 
-  const handleDownload = async (document: Document) => {
-    try {
-      const response = await fetch(buildEndpoint("/api/trust/v1/graphql"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          operationName: exportDocumentPDFMutation.params.name,
-          query: exportDocumentPDFMutation.params.text,
-          variables: { input: { documentId: document.id } },
-        }),
-      });
+  const [commitMutation] = useMutation<PublicTrustCenterDocumentsExportPDFMutation>(ExportDocumentPDFMutation);
 
-      const result: ExportDocumentPDFResponse = await response.json();
-
-      if (result.errors) {
-        throw new Error(result.errors[0].message);
-      }
-
-      if (result.data?.exportDocumentPDF?.data) {
-        const link = window.document.createElement("a");
-        link.href = result.data.exportDocumentPDF.data;
-        link.download = `${document.title}.pdf`;
-        window.document.body.appendChild(link);
-        link.click();
-        window.document.body.removeChild(link);
-      }
-    } catch (error) {
-      toast({
-        title: __("Download Failed"),
-        description: __("Unable to download the document. Please try again."),
-        variant: "error",
-      });
-    }
+  const handleDownload = async (document: TrustCenterDocument) => {
+    commitMutation({
+      variables: {
+        input: { documentId: document.id }
+      },
+      onCompleted: (response) => {
+        if (response.exportDocumentPDF?.data) {
+          const link = window.document.createElement("a");
+          link.href = response.exportDocumentPDF.data;
+          link.download = `${document.title}.pdf`;
+          window.document.body.appendChild(link);
+          link.click();
+          window.document.body.removeChild(link);
+        }
+      },
+      onError: () => {
+        toast({
+          title: __("Download Failed"),
+          description: __("Unable to download the document. Please try again."),
+          variant: "error",
+        });
+      },
+    });
   };
 
   if (documents.length === 0) {
@@ -150,7 +119,7 @@ export function PublicTrustCenterDocuments({
                 </Td>
                 <Td>
                   {!isAuthenticated ? (
-                    <TrustCenterAccessRequestDialog
+                    <PublicTrustCenterAccessRequestDialog
                       trigger={
                         <Button
                           variant="secondary"

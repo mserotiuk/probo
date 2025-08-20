@@ -9,19 +9,10 @@ import {
 } from "@probo/ui";
 import { useTranslate } from "@probo/i18n";
 import { faviconUrl, sprintf } from "@probo/helpers";
-
-type Vendor = {
-  id: string;
-  name: string;
-  category: string;
-  description: string | null;
-  createdAt: string;
-  privacyPolicyUrl?: string | null;
-  websiteUrl?: string | null;
-};
+import type { TrustCenterVendor } from "../pages/PublicTrustCenterPage";
 
 type Props = {
-  vendors: Vendor[];
+  vendors: TrustCenterVendor[];
   organizationName: string;
 };
 
