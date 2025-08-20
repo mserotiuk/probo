@@ -9,11 +9,13 @@ import {
   DocumentTypeBadge,
   Button,
   IconArrowDown,
+  IconLock,
   useToast,
 } from "@probo/ui";
 import { useTranslate } from "@probo/i18n";
 import { buildEndpoint } from "/providers/RelayProviders";
-// Manual mutation for trust API (not processed by relay compiler)
+import { TrustCenterAccessRequestDialog } from "./TrustCenterAccessRequestDialog";
+
 const exportDocumentPDFMutation = {
   params: {
     name: "PublicTrustCenterDocumentsExportPDFMutation",
@@ -39,6 +41,8 @@ type Document = {
 type Props = {
   documents: Document[];
   isAuthenticated: boolean;
+  trustCenterId: string;
+  organizationName: string;
 };
 
 type ExportDocumentPDFResponse = {
@@ -50,7 +54,12 @@ type ExportDocumentPDFResponse = {
   errors?: Array<{ message: string }>;
 };
 
-export function PublicTrustCenterDocuments({ documents, isAuthenticated }: Props) {
+export function PublicTrustCenterDocuments({
+  documents,
+  isAuthenticated,
+  trustCenterId,
+  organizationName
+}: Props) {
   const { __ } = useTranslate();
   const { toast } = useToast();
 
@@ -141,9 +150,18 @@ export function PublicTrustCenterDocuments({ documents, isAuthenticated }: Props
                 </Td>
                 <Td>
                   {!isAuthenticated ? (
-                    <span className="text-txt-tertiary text-sm">
-                      {__("Not available")}
-                    </span>
+                    <TrustCenterAccessRequestDialog
+                      trigger={
+                        <Button
+                          variant="secondary"
+                          icon={IconLock}
+                        >
+                          {__("Request Access")}
+                        </Button>
+                      }
+                      trustCenterId={trustCenterId}
+                      organizationName={organizationName}
+                    />
                   ) : (
                     <Button
                       variant="secondary"

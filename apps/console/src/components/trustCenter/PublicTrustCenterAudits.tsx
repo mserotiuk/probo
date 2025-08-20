@@ -8,10 +8,12 @@ import {
   Th,
   Button,
   IconArrowDown,
+  IconLock,
 } from "@probo/ui";
 import { useTranslate } from "@probo/i18n";
 import { sprintf } from "@probo/helpers";
 import { FrameworkLogo } from "/components/FrameworkLogo";
+import { TrustCenterAccessRequestDialog } from "./TrustCenterAccessRequestDialog";
 
 type Audit = {
   id: string;
@@ -27,16 +29,21 @@ type Audit = {
     filename: string;
     downloadUrl: string | null;
   } | null;
-  reportUrl: string | null;
 };
 
 type Props = {
   audits: Audit[];
   organizationName: string;
   isAuthenticated: boolean;
+  trustCenterId: string;
 };
 
-export function PublicTrustCenterAudits({ audits, organizationName, isAuthenticated }: Props) {
+export function PublicTrustCenterAudits({
+  audits,
+  organizationName,
+  isAuthenticated,
+  trustCenterId
+}: Props) {
   const { __ } = useTranslate();
 
   if (audits.length === 0) {
@@ -74,8 +81,8 @@ export function PublicTrustCenterAudits({ audits, organizationName, isAuthentica
         </Thead>
         <Tbody>
           {audits.map((audit) => {
-            const hasReport = audit.report || audit.reportUrl;
-            const downloadUrl = audit.report?.downloadUrl || audit.reportUrl;
+            const hasReport = audit.report !== null;
+            const downloadUrl = audit.report?.downloadUrl;
             const reportName = audit.report?.filename || __("Compliance Report");
 
             return (
@@ -98,9 +105,18 @@ export function PublicTrustCenterAudits({ audits, organizationName, isAuthentica
                       {__("No report")}
                     </span>
                   ) : !isAuthenticated ? (
-                    <span className="text-txt-tertiary text-sm">
-                      {__("Not available")}
-                    </span>
+                    <TrustCenterAccessRequestDialog
+                      trigger={
+                        <Button
+                          variant="secondary"
+                          icon={IconLock}
+                        >
+                          {__("Request Access")}
+                        </Button>
+                      }
+                      trustCenterId={trustCenterId}
+                      organizationName={organizationName}
+                    />
                   ) : downloadUrl ? (
                     <Button
                       variant="secondary"

@@ -35,7 +35,6 @@ export const publicTrustCenterQuery = {
                   filename
                   downloadUrl
                 }
-                reportUrl
               }
             }
           }

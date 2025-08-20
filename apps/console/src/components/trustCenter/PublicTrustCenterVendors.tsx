@@ -33,10 +33,10 @@ export function PublicTrustCenterVendors({ vendors, organizationName }: Props) {
       <Card padded>
         <div className="text-center py-8">
           <h2 className="text-xl font-semibold text-txt-primary mb-2">
-            {__("Vendors")}
+            {__("Subcontractors")}
           </h2>
           <p className="text-txt-secondary">
-            {__("No vendor information is currently available.")}
+            {__("No subcontractor information is currently available.")}
           </p>
         </div>
       </Card>

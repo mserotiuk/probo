@@ -16,6 +16,7 @@ package probo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -26,6 +27,7 @@ import (
 	"github.com/getprobo/probo/pkg/page"
 	"github.com/getprobo/probo/pkg/statelesstoken"
 	"github.com/getprobo/probo/pkg/usrmgr"
+	"github.com/jackc/pgx/v5"
 	"go.gearno.de/kit/pg"
 )
 
@@ -39,10 +41,17 @@ type (
 		TrustCenterID gid.GID
 		Email         string
 		Name          string
+		Active        bool
+	}
+
+	UpdateTrustCenterAccessRequest struct {
+		ID     gid.GID
+		Name   *string
+		Active *bool
 	}
 
 	DeleteTrustCenterAccessRequest struct {
-		AccessID gid.GID
+		ID gid.GID
 	}
 
 	TrustCenterAccessData struct {
@@ -130,10 +139,13 @@ func (s TrustCenterAccessService) Create(
 		err := existingAccess.LoadByTrustCenterIDAndEmail(ctx, tx, s.svc.scope, req.TrustCenterID, req.Email)
 
 		if err == nil {
-			// Access already exists, delete it
 			if err := existingAccess.Delete(ctx, tx, s.svc.scope); err != nil {
 				return fmt.Errorf("cannot delete existing trust center access: %w", err)
 			}
+		}
+
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("cannot load trust center access: %w", err)
 		}
 
 		access = &coredata.TrustCenterAccess{
@@ -142,6 +154,7 @@ func (s TrustCenterAccessService) Create(
 			TrustCenterID: req.TrustCenterID,
 			Email:         req.Email,
 			Name:          req.Name,
+			Active:        req.Active,
 			CreatedAt:     now,
 			UpdatedAt:     now,
 		}
@@ -150,8 +163,58 @@ func (s TrustCenterAccessService) Create(
 			return fmt.Errorf("cannot insert trust center access: %w", err)
 		}
 
-		if err := s.sendAccessEmail(ctx, tx, access); err != nil {
-			return fmt.Errorf("failed to send access email: %w", err)
+		if req.Active {
+			if err := s.sendAccessEmail(ctx, tx, access); err != nil {
+				return fmt.Errorf("failed to send access email: %w", err)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return access, nil
+}
+
+func (s TrustCenterAccessService) Update(
+	ctx context.Context,
+	req *UpdateTrustCenterAccessRequest,
+) (*coredata.TrustCenterAccess, error) {
+	now := time.Now()
+
+	var access *coredata.TrustCenterAccess
+
+	if req.Name != nil && *req.Name == "" {
+		return nil, fmt.Errorf("name is required")
+	}
+
+	err := s.svc.pg.WithTx(ctx, func(tx pg.Conn) error {
+		access = &coredata.TrustCenterAccess{}
+
+		if err := access.LoadByID(ctx, tx, s.svc.scope, req.ID); err != nil {
+			return fmt.Errorf("cannot load trust center access: %w", err)
+		}
+
+		shouldSendEmail := req.Active != nil && *req.Active && !access.Active
+		if req.Name != nil {
+			access.Name = *req.Name
+		}
+		if req.Active != nil {
+			access.Active = *req.Active
+		}
+		access.UpdatedAt = now
+
+		if err := access.Update(ctx, tx, s.svc.scope); err != nil {
+			return fmt.Errorf("cannot update trust center access: %w", err)
+		}
+
+		if shouldSendEmail {
+			if err := s.sendAccessEmail(ctx, tx, access); err != nil {
+				return fmt.Errorf("failed to send access email: %w", err)
+			}
 		}
 
 		return nil
@@ -171,7 +234,7 @@ func (s TrustCenterAccessService) Delete(
 	err := s.svc.pg.WithTx(ctx, func(tx pg.Conn) error {
 		access := &coredata.TrustCenterAccess{}
 
-		if err := access.LoadByID(ctx, tx, s.svc.scope, req.AccessID); err != nil {
+		if err := access.LoadByID(ctx, tx, s.svc.scope, req.ID); err != nil {
 			return fmt.Errorf("cannot load trust center access: %w", err)
 		}
 

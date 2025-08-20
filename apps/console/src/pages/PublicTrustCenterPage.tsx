@@ -63,7 +63,6 @@ interface Audit {
     filename: string;
     downloadUrl: string | null;
   } | null;
-  reportUrl: string | null;
 }
 
 interface Vendor {
@@ -192,6 +191,7 @@ function PublicTrustCenterContent() {
     <PublicTrustCenterLayout
       organizationName={organization.name}
       organizationLogo={organization.logoUrl}
+      isAuthenticated={isAuthenticated}
     >
       <div className="space-y-8">
         <div className="text-center">
@@ -208,10 +208,13 @@ function PublicTrustCenterContent() {
           audits={audits}
           organizationName={organization.name}
           isAuthenticated={isAuthenticated}
+          trustCenterId={trustCenterBySlug.id}
         />
         <PublicTrustCenterDocuments
           documents={documents}
           isAuthenticated={isAuthenticated}
+          trustCenterId={trustCenterBySlug.id}
+          organizationName={organization.name}
         />
         <PublicTrustCenterVendors
           vendors={vendors}

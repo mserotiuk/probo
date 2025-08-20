@@ -16,12 +16,17 @@ package trust
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/getprobo/probo/pkg/coredata"
+	"github.com/getprobo/probo/pkg/gid"
 	"github.com/getprobo/probo/pkg/probo"
 	"github.com/getprobo/probo/pkg/statelesstoken"
 	"github.com/getprobo/probo/pkg/usrmgr"
+	"github.com/jackc/pgx/v5"
 	"go.gearno.de/kit/pg"
 )
 
@@ -29,6 +34,12 @@ type (
 	TrustCenterAccessService struct {
 		svc    *TenantService
 		usrmgr *usrmgr.Service
+	}
+
+	CreateTrustCenterAccessRequest struct {
+		TrustCenterID gid.GID
+		Email         string
+		Name          string
 	}
 )
 
@@ -56,6 +67,10 @@ func (s TrustCenterAccessService) ValidateToken(
 			return fmt.Errorf("cannot load trust center access: %w", err)
 		}
 
+		if !access.Active {
+			return fmt.Errorf("trust center access is not active")
+		}
+
 		return nil
 	})
 
@@ -64,4 +79,58 @@ func (s TrustCenterAccessService) ValidateToken(
 	}
 
 	return &token.Data, nil
+}
+
+func (s TrustCenterAccessService) Create(
+	ctx context.Context,
+	req *CreateTrustCenterAccessRequest,
+) (*coredata.TrustCenterAccess, error) {
+	if !strings.Contains(req.Email, "@") {
+		return nil, fmt.Errorf("invalid email address")
+	}
+
+	if req.Name == "" {
+		return nil, fmt.Errorf("name is required")
+	}
+
+	now := time.Now()
+
+	var access *coredata.TrustCenterAccess
+
+	err := s.svc.pg.WithTx(ctx, func(tx pg.Conn) error {
+		existingAccess := &coredata.TrustCenterAccess{}
+		err := existingAccess.LoadByTrustCenterIDAndEmail(ctx, tx, s.svc.scope, req.TrustCenterID, req.Email)
+
+		if err == nil {
+			if err := existingAccess.Delete(ctx, tx, s.svc.scope); err != nil {
+				return fmt.Errorf("cannot delete existing trust center access: %w", err)
+			}
+		}
+
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("cannot load trust center access: %w", err)
+		}
+
+		access = &coredata.TrustCenterAccess{
+			ID:            gid.New(s.svc.scope.GetTenantID(), coredata.TrustCenterAccessEntityType),
+			TenantID:      s.svc.scope.GetTenantID(),
+			TrustCenterID: req.TrustCenterID,
+			Email:         req.Email,
+			Name:          req.Name,
+			Active:        false,
+			CreatedAt:     now,
+			UpdatedAt:     now,
+		}
+
+		if err := access.Insert(ctx, tx, s.svc.scope); err != nil {
+			return fmt.Errorf("cannot insert trust center access: %w", err)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return access, nil
 }
