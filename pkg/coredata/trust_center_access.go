@@ -16,6 +16,7 @@ package coredata
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"maps"
 	"time"
@@ -39,7 +40,15 @@ type (
 	}
 
 	TrustCenterAccesses []*TrustCenterAccess
+
+	ErrTrustCenterAccessNotFound struct {
+		Identifier string
+	}
 )
+
+func (e ErrTrustCenterAccessNotFound) Error() string {
+	return fmt.Sprintf("trust center access not found: %s", e.Identifier)
+}
 
 func (tca *TrustCenterAccess) CursorKey(orderBy TrustCenterAccessOrderField) page.CursorKey {
 	switch orderBy {
@@ -86,6 +95,10 @@ LIMIT 1;
 
 	access, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[TrustCenterAccess])
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return &ErrTrustCenterAccessNotFound{Identifier: accessID.String()}
+		}
+
 		return fmt.Errorf("cannot collect trust center access: %w", err)
 	}
 
@@ -135,6 +148,10 @@ LIMIT 1;
 
 	access, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[TrustCenterAccess])
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return &ErrTrustCenterAccessNotFound{Identifier: fmt.Sprintf("trust_center_id=%s, email=%s", trustCenterID, email)}
+		}
+
 		return fmt.Errorf("cannot collect trust center access: %w", err)
 	}
 

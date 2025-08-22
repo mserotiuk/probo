@@ -26,7 +26,6 @@ import (
 	"github.com/getprobo/probo/pkg/probo"
 	"github.com/getprobo/probo/pkg/statelesstoken"
 	"github.com/getprobo/probo/pkg/usrmgr"
-	"github.com/jackc/pgx/v5"
 	"go.gearno.de/kit/pg"
 )
 
@@ -108,10 +107,11 @@ func (s TrustCenterAccessService) Create(
 			if err := existingAccess.Delete(ctx, tx, s.svc.scope); err != nil {
 				return fmt.Errorf("cannot delete existing trust center access: %w", err)
 			}
-		}
-
-		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-			return fmt.Errorf("cannot load trust center access: %w", err)
+		} else {
+			var notFoundErr *coredata.ErrTrustCenterAccessNotFound
+			if !errors.As(err, &notFoundErr) {
+				return fmt.Errorf("cannot load trust center access: %w", err)
+			}
 		}
 
 		access = &coredata.TrustCenterAccess{
