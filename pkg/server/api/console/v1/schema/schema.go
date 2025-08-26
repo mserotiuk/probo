@@ -50,6 +50,8 @@ type ResolverRoot interface {
 	AuditConnection() AuditConnectionResolver
 	ComplianceRegistry() ComplianceRegistryResolver
 	ComplianceRegistryConnection() ComplianceRegistryConnectionResolver
+	ContinualImprovementRegistry() ContinualImprovementRegistryResolver
+	ContinualImprovementRegistryConnection() ContinualImprovementRegistryConnectionResolver
 	Control() ControlResolver
 	ControlConnection() ControlConnectionResolver
 	Datum() DatumResolver
@@ -218,6 +220,32 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	ContinualImprovementRegistry struct {
+		Audit        func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		Description  func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Organization func(childComplexity int) int
+		Owner        func(childComplexity int) int
+		Priority     func(childComplexity int) int
+		ReferenceID  func(childComplexity int) int
+		Source       func(childComplexity int) int
+		Status       func(childComplexity int) int
+		TargetDate   func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+	}
+
+	ContinualImprovementRegistryConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ContinualImprovementRegistryEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	Control struct {
 		Audits                 func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AuditOrderBy) int
 		CreatedAt              func(childComplexity int) int
@@ -255,6 +283,10 @@ type ComplexityRoot struct {
 
 	CreateComplianceRegistryPayload struct {
 		ComplianceRegistryEdge func(childComplexity int) int
+	}
+
+	CreateContinualImprovementRegistryPayload struct {
+		ContinualImprovementRegistryEdge func(childComplexity int) int
 	}
 
 	CreateControlAuditMappingPayload struct {
@@ -396,6 +428,10 @@ type ComplexityRoot struct {
 
 	DeleteComplianceRegistryPayload struct {
 		DeletedComplianceRegistryID func(childComplexity int) int
+	}
+
+	DeleteContinualImprovementRegistryPayload struct {
+		DeletedContinualImprovementRegistryID func(childComplexity int) int
 	}
 
 	DeleteControlAuditMappingPayload struct {
@@ -693,6 +729,7 @@ type ComplexityRoot struct {
 		CreateAsset                            func(childComplexity int, input types.CreateAssetInput) int
 		CreateAudit                            func(childComplexity int, input types.CreateAuditInput) int
 		CreateComplianceRegistry               func(childComplexity int, input types.CreateComplianceRegistryInput) int
+		CreateContinualImprovementRegistry     func(childComplexity int, input types.CreateContinualImprovementRegistryInput) int
 		CreateControl                          func(childComplexity int, input types.CreateControlInput) int
 		CreateControlAuditMapping              func(childComplexity int, input types.CreateControlAuditMappingInput) int
 		CreateControlDocumentMapping           func(childComplexity int, input types.CreateControlDocumentMappingInput) int
@@ -720,6 +757,7 @@ type ComplexityRoot struct {
 		DeleteAudit                            func(childComplexity int, input types.DeleteAuditInput) int
 		DeleteAuditReport                      func(childComplexity int, input types.DeleteAuditReportInput) int
 		DeleteComplianceRegistry               func(childComplexity int, input types.DeleteComplianceRegistryInput) int
+		DeleteContinualImprovementRegistry     func(childComplexity int, input types.DeleteContinualImprovementRegistryInput) int
 		DeleteControl                          func(childComplexity int, input types.DeleteControlInput) int
 		DeleteControlAuditMapping              func(childComplexity int, input types.DeleteControlAuditMappingInput) int
 		DeleteControlDocumentMapping           func(childComplexity int, input types.DeleteControlDocumentMappingInput) int
@@ -762,6 +800,7 @@ type ComplexityRoot struct {
 		UpdateAsset                            func(childComplexity int, input types.UpdateAssetInput) int
 		UpdateAudit                            func(childComplexity int, input types.UpdateAuditInput) int
 		UpdateComplianceRegistry               func(childComplexity int, input types.UpdateComplianceRegistryInput) int
+		UpdateContinualImprovementRegistry     func(childComplexity int, input types.UpdateContinualImprovementRegistryInput) int
 		UpdateControl                          func(childComplexity int, input types.UpdateControlInput) int
 		UpdateDatum                            func(childComplexity int, input types.UpdateDatumInput) int
 		UpdateDocument                         func(childComplexity int, input types.UpdateDocumentInput) int
@@ -817,28 +856,29 @@ type ComplexityRoot struct {
 	}
 
 	Organization struct {
-		Assets                  func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AssetOrderBy) int
-		Audits                  func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AuditOrderBy) int
-		ComplianceRegistries    func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ComplianceRegistryOrderBy) int
-		Connectors              func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ConnectorOrder) int
-		Controls                func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ControlOrderBy, filter *types.ControlFilter) int
-		CreatedAt               func(childComplexity int) int
-		Data                    func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.DatumOrderBy, filter *types.DatumFilter) int
-		Documents               func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.DocumentOrderBy, filter *types.DocumentFilter) int
-		Frameworks              func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.FrameworkOrderBy) int
-		ID                      func(childComplexity int) int
-		LogoURL                 func(childComplexity int) int
-		Measures                func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.MeasureOrderBy, filter *types.MeasureFilter) int
-		Name                    func(childComplexity int) int
-		NonconformityRegistries func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.NonconformityRegistryOrderBy) int
-		Peoples                 func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.PeopleOrderBy, filter *types.PeopleFilter) int
-		Risks                   func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.RiskOrderBy, filter *types.RiskFilter) int
-		Snapshots               func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) int
-		Tasks                   func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.TaskOrderBy) int
-		TrustCenter             func(childComplexity int) int
-		UpdatedAt               func(childComplexity int) int
-		Users                   func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.UserOrderBy) int
-		Vendors                 func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.VendorOrderBy) int
+		Assets                         func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AssetOrderBy) int
+		Audits                         func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AuditOrderBy) int
+		ComplianceRegistries           func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ComplianceRegistryOrderBy) int
+		Connectors                     func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ConnectorOrder) int
+		ContinualImprovementRegistries func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ContinualImprovementRegistriesOrderBy) int
+		Controls                       func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ControlOrderBy, filter *types.ControlFilter) int
+		CreatedAt                      func(childComplexity int) int
+		Data                           func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.DatumOrderBy, filter *types.DatumFilter) int
+		Documents                      func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.DocumentOrderBy, filter *types.DocumentFilter) int
+		Frameworks                     func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.FrameworkOrderBy) int
+		ID                             func(childComplexity int) int
+		LogoURL                        func(childComplexity int) int
+		Measures                       func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.MeasureOrderBy, filter *types.MeasureFilter) int
+		Name                           func(childComplexity int) int
+		NonconformityRegistries        func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.NonconformityRegistryOrderBy) int
+		Peoples                        func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.PeopleOrderBy, filter *types.PeopleFilter) int
+		Risks                          func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.RiskOrderBy, filter *types.RiskFilter) int
+		Snapshots                      func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) int
+		Tasks                          func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.TaskOrderBy) int
+		TrustCenter                    func(childComplexity int) int
+		UpdatedAt                      func(childComplexity int) int
+		Users                          func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.UserOrderBy) int
+		Vendors                        func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.VendorOrderBy) int
 	}
 
 	OrganizationConnection struct {
@@ -1058,6 +1098,10 @@ type ComplexityRoot struct {
 
 	UpdateComplianceRegistryPayload struct {
 		ComplianceRegistry func(childComplexity int) int
+	}
+
+	UpdateContinualImprovementRegistryPayload struct {
+		ContinualImprovementRegistry func(childComplexity int) int
 	}
 
 	UpdateControlPayload struct {
@@ -1367,6 +1411,16 @@ type ComplianceRegistryResolver interface {
 type ComplianceRegistryConnectionResolver interface {
 	TotalCount(ctx context.Context, obj *types.ComplianceRegistryConnection) (int, error)
 }
+type ContinualImprovementRegistryResolver interface {
+	Organization(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.Organization, error)
+
+	Audit(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.Audit, error)
+
+	Owner(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.People, error)
+}
+type ContinualImprovementRegistryConnectionResolver interface {
+	TotalCount(ctx context.Context, obj *types.ContinualImprovementRegistryConnection) (int, error)
+}
 type ControlResolver interface {
 	Framework(ctx context.Context, obj *types.Control) (*types.Framework, error)
 	Measures(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.MeasureOrderBy, filter *types.MeasureFilter) (*types.MeasureConnection, error)
@@ -1534,6 +1588,9 @@ type MutationResolver interface {
 	CreateComplianceRegistry(ctx context.Context, input types.CreateComplianceRegistryInput) (*types.CreateComplianceRegistryPayload, error)
 	UpdateComplianceRegistry(ctx context.Context, input types.UpdateComplianceRegistryInput) (*types.UpdateComplianceRegistryPayload, error)
 	DeleteComplianceRegistry(ctx context.Context, input types.DeleteComplianceRegistryInput) (*types.DeleteComplianceRegistryPayload, error)
+	CreateContinualImprovementRegistry(ctx context.Context, input types.CreateContinualImprovementRegistryInput) (*types.CreateContinualImprovementRegistryPayload, error)
+	UpdateContinualImprovementRegistry(ctx context.Context, input types.UpdateContinualImprovementRegistryInput) (*types.UpdateContinualImprovementRegistryPayload, error)
+	DeleteContinualImprovementRegistry(ctx context.Context, input types.DeleteContinualImprovementRegistryInput) (*types.DeleteContinualImprovementRegistryPayload, error)
 	CreateSnapshot(ctx context.Context, input types.CreateSnapshotInput) (*types.CreateSnapshotPayload, error)
 	DeleteSnapshot(ctx context.Context, input types.DeleteSnapshotInput) (*types.DeleteSnapshotPayload, error)
 }
@@ -1564,6 +1621,7 @@ type OrganizationResolver interface {
 	Audits(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AuditOrderBy) (*types.AuditConnection, error)
 	NonconformityRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.NonconformityRegistryOrderBy) (*types.NonconformityRegistryConnection, error)
 	ComplianceRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ComplianceRegistryOrderBy) (*types.ComplianceRegistryConnection, error)
+	ContinualImprovementRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ContinualImprovementRegistriesOrderBy) (*types.ContinualImprovementRegistryConnection, error)
 	Snapshots(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) (*types.SnapshotConnection, error)
 	TrustCenter(ctx context.Context, obj *types.Organization) (*types.TrustCenter, error)
 }
@@ -2175,6 +2233,125 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.ConnectorEdge.Node(childComplexity), true
 
+	case "ContinualImprovementRegistry.audit":
+		if e.complexity.ContinualImprovementRegistry.Audit == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Audit(childComplexity), true
+
+	case "ContinualImprovementRegistry.createdAt":
+		if e.complexity.ContinualImprovementRegistry.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.CreatedAt(childComplexity), true
+
+	case "ContinualImprovementRegistry.description":
+		if e.complexity.ContinualImprovementRegistry.Description == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Description(childComplexity), true
+
+	case "ContinualImprovementRegistry.id":
+		if e.complexity.ContinualImprovementRegistry.ID == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.ID(childComplexity), true
+
+	case "ContinualImprovementRegistry.organization":
+		if e.complexity.ContinualImprovementRegistry.Organization == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Organization(childComplexity), true
+
+	case "ContinualImprovementRegistry.owner":
+		if e.complexity.ContinualImprovementRegistry.Owner == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Owner(childComplexity), true
+
+	case "ContinualImprovementRegistry.priority":
+		if e.complexity.ContinualImprovementRegistry.Priority == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Priority(childComplexity), true
+
+	case "ContinualImprovementRegistry.referenceId":
+		if e.complexity.ContinualImprovementRegistry.ReferenceID == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.ReferenceID(childComplexity), true
+
+	case "ContinualImprovementRegistry.source":
+		if e.complexity.ContinualImprovementRegistry.Source == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Source(childComplexity), true
+
+	case "ContinualImprovementRegistry.status":
+		if e.complexity.ContinualImprovementRegistry.Status == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.Status(childComplexity), true
+
+	case "ContinualImprovementRegistry.targetDate":
+		if e.complexity.ContinualImprovementRegistry.TargetDate == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.TargetDate(childComplexity), true
+
+	case "ContinualImprovementRegistry.updatedAt":
+		if e.complexity.ContinualImprovementRegistry.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistry.UpdatedAt(childComplexity), true
+
+	case "ContinualImprovementRegistryConnection.edges":
+		if e.complexity.ContinualImprovementRegistryConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistryConnection.Edges(childComplexity), true
+
+	case "ContinualImprovementRegistryConnection.pageInfo":
+		if e.complexity.ContinualImprovementRegistryConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistryConnection.PageInfo(childComplexity), true
+
+	case "ContinualImprovementRegistryConnection.totalCount":
+		if e.complexity.ContinualImprovementRegistryConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistryConnection.TotalCount(childComplexity), true
+
+	case "ContinualImprovementRegistryEdge.cursor":
+		if e.complexity.ContinualImprovementRegistryEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistryEdge.Cursor(childComplexity), true
+
+	case "ContinualImprovementRegistryEdge.node":
+		if e.complexity.ContinualImprovementRegistryEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ContinualImprovementRegistryEdge.Node(childComplexity), true
+
 	case "Control.audits":
 		if e.complexity.Control.Audits == nil {
 			break
@@ -2341,6 +2518,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.CreateComplianceRegistryPayload.ComplianceRegistryEdge(childComplexity), true
+
+	case "CreateContinualImprovementRegistryPayload.continualImprovementRegistryEdge":
+		if e.complexity.CreateContinualImprovementRegistryPayload.ContinualImprovementRegistryEdge == nil {
+			break
+		}
+
+		return e.complexity.CreateContinualImprovementRegistryPayload.ContinualImprovementRegistryEdge(childComplexity), true
 
 	case "CreateControlAuditMappingPayload.auditEdge":
 		if e.complexity.CreateControlAuditMappingPayload.AuditEdge == nil {
@@ -2682,6 +2866,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.DeleteComplianceRegistryPayload.DeletedComplianceRegistryID(childComplexity), true
+
+	case "DeleteContinualImprovementRegistryPayload.deletedContinualImprovementRegistryId":
+		if e.complexity.DeleteContinualImprovementRegistryPayload.DeletedContinualImprovementRegistryID == nil {
+			break
+		}
+
+		return e.complexity.DeleteContinualImprovementRegistryPayload.DeletedContinualImprovementRegistryID(childComplexity), true
 
 	case "DeleteControlAuditMappingPayload.deletedAuditId":
 		if e.complexity.DeleteControlAuditMappingPayload.DeletedAuditID == nil {
@@ -3755,6 +3946,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateComplianceRegistry(childComplexity, args["input"].(types.CreateComplianceRegistryInput)), true
 
+	case "Mutation.createContinualImprovementRegistry":
+		if e.complexity.Mutation.CreateContinualImprovementRegistry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createContinualImprovementRegistry_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateContinualImprovementRegistry(childComplexity, args["input"].(types.CreateContinualImprovementRegistryInput)), true
+
 	case "Mutation.createControl":
 		if e.complexity.Mutation.CreateControl == nil {
 			break
@@ -4078,6 +4281,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteComplianceRegistry(childComplexity, args["input"].(types.DeleteComplianceRegistryInput)), true
+
+	case "Mutation.deleteContinualImprovementRegistry":
+		if e.complexity.Mutation.DeleteContinualImprovementRegistry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteContinualImprovementRegistry_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteContinualImprovementRegistry(childComplexity, args["input"].(types.DeleteContinualImprovementRegistryInput)), true
 
 	case "Mutation.deleteControl":
 		if e.complexity.Mutation.DeleteControl == nil {
@@ -4583,6 +4798,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.UpdateComplianceRegistry(childComplexity, args["input"].(types.UpdateComplianceRegistryInput)), true
 
+	case "Mutation.updateContinualImprovementRegistry":
+		if e.complexity.Mutation.UpdateContinualImprovementRegistry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateContinualImprovementRegistry_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateContinualImprovementRegistry(childComplexity, args["input"].(types.UpdateContinualImprovementRegistryInput)), true
+
 	case "Mutation.updateControl":
 		if e.complexity.Mutation.UpdateControl == nil {
 			break
@@ -5051,6 +5278,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Organization.Connectors(childComplexity, args["first"].(*int), args["after"].(*page.CursorKey), args["last"].(*int), args["before"].(*page.CursorKey), args["orderBy"].(*types.ConnectorOrder)), true
+
+	case "Organization.continualImprovementRegistries":
+		if e.complexity.Organization.ContinualImprovementRegistries == nil {
+			break
+		}
+
+		args, err := ec.field_Organization_continualImprovementRegistries_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Organization.ContinualImprovementRegistries(childComplexity, args["first"].(*int), args["after"].(*page.CursorKey), args["last"].(*int), args["before"].(*page.CursorKey), args["orderBy"].(*types.ContinualImprovementRegistriesOrderBy)), true
 
 	case "Organization.controls":
 		if e.complexity.Organization.Controls == nil {
@@ -6118,6 +6357,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.UpdateComplianceRegistryPayload.ComplianceRegistry(childComplexity), true
 
+	case "UpdateContinualImprovementRegistryPayload.continualImprovementRegistry":
+		if e.complexity.UpdateContinualImprovementRegistryPayload.ContinualImprovementRegistry == nil {
+			break
+		}
+
+		return e.complexity.UpdateContinualImprovementRegistryPayload.ContinualImprovementRegistry(childComplexity), true
+
 	case "UpdateControlPayload.control":
 		if e.complexity.UpdateControlPayload.Control == nil {
 			break
@@ -7132,11 +7378,13 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputComplianceRegistryOrder,
 		ec.unmarshalInputConfirmEmailInput,
 		ec.unmarshalInputConnectorOrder,
+		ec.unmarshalInputContinualImprovementRegistriesOrder,
 		ec.unmarshalInputControlFilter,
 		ec.unmarshalInputControlOrder,
 		ec.unmarshalInputCreateAssetInput,
 		ec.unmarshalInputCreateAuditInput,
 		ec.unmarshalInputCreateComplianceRegistryInput,
+		ec.unmarshalInputCreateContinualImprovementRegistryInput,
 		ec.unmarshalInputCreateControlAuditMappingInput,
 		ec.unmarshalInputCreateControlDocumentMappingInput,
 		ec.unmarshalInputCreateControlInput,
@@ -7167,6 +7415,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputDeleteAuditInput,
 		ec.unmarshalInputDeleteAuditReportInput,
 		ec.unmarshalInputDeleteComplianceRegistryInput,
+		ec.unmarshalInputDeleteContinualImprovementRegistryInput,
 		ec.unmarshalInputDeleteControlAuditMappingInput,
 		ec.unmarshalInputDeleteControlDocumentMappingInput,
 		ec.unmarshalInputDeleteControlInput,
@@ -7229,6 +7478,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateAssetInput,
 		ec.unmarshalInputUpdateAuditInput,
 		ec.unmarshalInputUpdateComplianceRegistryInput,
+		ec.unmarshalInputUpdateContinualImprovementRegistryInput,
 		ec.unmarshalInputUpdateControlInput,
 		ec.unmarshalInputUpdateDatumInput,
 		ec.unmarshalInputUpdateDocumentInput,
@@ -7538,6 +7788,38 @@ enum ComplianceRegistryStatus
   CLOSED
     @goEnum(
       value: "github.com/getprobo/probo/pkg/coredata.ComplianceRegistryStatusClosed"
+    )
+}
+
+enum ContinualImprovementRegistriesStatus
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesStatus") {
+  OPEN
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesStatusOpen"
+    )
+  IN_PROGRESS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesStatusInProgress"
+    )
+  CLOSED
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesStatusClosed"
+    )
+}
+
+enum ContinualImprovementRegistriesPriority
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesPriority") {
+  LOW
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesPriorityLow"
+    )
+  MEDIUM
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesPriorityMedium"
+    )
+  HIGH
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesPriorityHigh"
     )
 }
 
@@ -8036,6 +8318,30 @@ enum ComplianceRegistryOrderField
     )
 }
 
+enum ContinualImprovementRegistriesOrderField
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderField") {
+  CREATED_AT
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderFieldCreatedAt"
+    )
+  REFERENCE_ID
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderFieldReferenceId"
+    )
+  TARGET_DATE
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderFieldTargetDate"
+    )
+  STATUS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderFieldStatus"
+    )
+  PRIORITY
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.ContinualImprovementRegistriesOrderFieldPriority"
+    )
+}
+
 enum TrustCenterAccessOrderField
   @goModel(model: "github.com/getprobo/probo/pkg/coredata.TrustCenterAccessOrderField") {
   CREATED_AT
@@ -8183,6 +8489,14 @@ input ComplianceRegistryOrder
   ) {
   direction: OrderDirection!
   field: ComplianceRegistryOrderField!
+}
+
+input ContinualImprovementRegistriesOrder
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.ContinualImprovementRegistriesOrderBy"
+  ) {
+  direction: OrderDirection!
+  field: ContinualImprovementRegistriesOrderField!
 }
 
 input TrustCenterAccessOrder
@@ -8436,6 +8750,14 @@ type Organization implements Node {
     before: CursorKey
     orderBy: ComplianceRegistryOrder
   ): ComplianceRegistryConnection! @goField(forceResolver: true)
+
+  continualImprovementRegistries(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: ContinualImprovementRegistriesOrder
+  ): ContinualImprovementRegistryConnection! @goField(forceResolver: true)
 
   snapshots(
     first: Int
@@ -8897,6 +9219,21 @@ type ComplianceRegistry implements Node {
   updatedAt: Datetime!
 }
 
+type ContinualImprovementRegistry implements Node {
+  id: ID!
+  organization: Organization! @goField(forceResolver: true)
+  referenceId: String!
+  description: String
+  audit: Audit! @goField(forceResolver: true)
+  source: String
+  owner: People! @goField(forceResolver: true)
+  targetDate: Datetime
+  status: ContinualImprovementRegistriesStatus!
+  priority: ContinualImprovementRegistriesPriority!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
 type Snapshot implements Node {
   id: ID!
   organization: Organization! @goField(forceResolver: true)
@@ -9238,6 +9575,20 @@ type ComplianceRegistryEdge {
   node: ComplianceRegistry!
 }
 
+type ContinualImprovementRegistryConnection
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.ContinualImprovementRegistryConnection"
+  ) {
+  totalCount: Int! @goField(forceResolver: true)
+  edges: [ContinualImprovementRegistryEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ContinualImprovementRegistryEdge {
+  cursor: CursorKey!
+  node: ContinualImprovementRegistry!
+}
+
 type SnapshotConnection
   @goModel(
     model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.SnapshotConnection"
@@ -9508,6 +9859,17 @@ type Mutation {
   deleteComplianceRegistry(
     input: DeleteComplianceRegistryInput!
   ): DeleteComplianceRegistryPayload!
+
+  # Continual Improvement Registry mutations
+  createContinualImprovementRegistry(
+    input: CreateContinualImprovementRegistryInput!
+  ): CreateContinualImprovementRegistryPayload!
+  updateContinualImprovementRegistry(
+    input: UpdateContinualImprovementRegistryInput!
+  ): UpdateContinualImprovementRegistryPayload!
+  deleteContinualImprovementRegistry(
+    input: DeleteContinualImprovementRegistryInput!
+  ): DeleteContinualImprovementRegistryPayload!
 
   # Snapshot mutations
   createSnapshot(input: CreateSnapshotInput!): CreateSnapshotPayload!
@@ -10075,6 +10437,34 @@ input UpdateComplianceRegistryInput {
 
 input DeleteComplianceRegistryInput {
   complianceRegistryId: ID!
+}
+
+input CreateContinualImprovementRegistryInput {
+  organizationId: ID!
+  referenceId: String!
+  description: String
+  auditId: ID!
+  source: String
+  ownerId: ID!
+  targetDate: Datetime
+  status: ContinualImprovementRegistriesStatus!
+  priority: ContinualImprovementRegistriesPriority!
+}
+
+input UpdateContinualImprovementRegistryInput {
+  id: ID!
+  referenceId: String
+  description: String
+  auditId: ID
+  source: String
+  ownerId: ID
+  targetDate: Datetime
+  status: ContinualImprovementRegistriesStatus
+  priority: ContinualImprovementRegistriesPriority
+}
+
+input DeleteContinualImprovementRegistryInput {
+  continualImprovementRegistryId: ID!
 }
 
 input CreateSnapshotInput {
@@ -10806,6 +11196,18 @@ type UpdateComplianceRegistryPayload {
 
 type DeleteComplianceRegistryPayload {
   deletedComplianceRegistryId: ID!
+}
+
+type CreateContinualImprovementRegistryPayload {
+  continualImprovementRegistryEdge: ContinualImprovementRegistryEdge!
+}
+
+type UpdateContinualImprovementRegistryPayload {
+  continualImprovementRegistry: ContinualImprovementRegistry!
+}
+
+type DeleteContinualImprovementRegistryPayload {
+  deletedContinualImprovementRegistryId: ID!
 }
 
 type CreateSnapshotPayload {
@@ -12599,6 +13001,29 @@ func (ec *executionContext) field_Mutation_createComplianceRegistry_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_createContinualImprovementRegistry_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_createContinualImprovementRegistry_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createContinualImprovementRegistry_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (types.CreateContinualImprovementRegistryInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreateContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateContinualImprovementRegistryInput(ctx, tmp)
+	}
+
+	var zeroVal types.CreateContinualImprovementRegistryInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_createControlAuditMapping_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -13217,6 +13642,29 @@ func (ec *executionContext) field_Mutation_deleteComplianceRegistry_argsInput(
 	}
 
 	var zeroVal types.DeleteComplianceRegistryInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteContinualImprovementRegistry_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteContinualImprovementRegistry_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteContinualImprovementRegistry_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (types.DeleteContinualImprovementRegistryInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteContinualImprovementRegistryInput(ctx, tmp)
+	}
+
+	var zeroVal types.DeleteContinualImprovementRegistryInput
 	return zeroVal, nil
 }
 
@@ -14186,6 +14634,29 @@ func (ec *executionContext) field_Mutation_updateComplianceRegistry_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_updateContinualImprovementRegistry_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateContinualImprovementRegistry_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateContinualImprovementRegistry_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (types.UpdateContinualImprovementRegistryInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateContinualImprovementRegistryInput(ctx, tmp)
+	}
+
+	var zeroVal types.UpdateContinualImprovementRegistryInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_updateControl_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -15115,6 +15586,101 @@ func (ec *executionContext) field_Organization_connectors_argsOrderBy(
 	}
 
 	var zeroVal *types.ConnectorOrder
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Organization_continualImprovementRegistries_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Organization_continualImprovementRegistries_argsFirst(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := ec.field_Organization_continualImprovementRegistries_argsAfter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	arg2, err := ec.field_Organization_continualImprovementRegistries_argsLast(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg2
+	arg3, err := ec.field_Organization_continualImprovementRegistries_argsBefore(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg3
+	arg4, err := ec.field_Organization_continualImprovementRegistries_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg4
+	return args, nil
+}
+func (ec *executionContext) field_Organization_continualImprovementRegistries_argsFirst(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+	if tmp, ok := rawArgs["first"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Organization_continualImprovementRegistries_argsAfter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+	if tmp, ok := rawArgs["after"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Organization_continualImprovementRegistries_argsLast(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+	if tmp, ok := rawArgs["last"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Organization_continualImprovementRegistries_argsBefore(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+	if tmp, ok := rawArgs["before"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Organization_continualImprovementRegistries_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*types.ContinualImprovementRegistriesOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOContinualImprovementRegistriesOrder2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistriesOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *types.ContinualImprovementRegistriesOrderBy
 	return zeroVal, nil
 }
 
@@ -18337,6 +18903,8 @@ func (ec *executionContext) fieldContext_Asset_organization(_ context.Context, f
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -18930,6 +19498,8 @@ func (ec *executionContext) fieldContext_Audit_organization(_ context.Context, f
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -20003,6 +20573,8 @@ func (ec *executionContext) fieldContext_ComplianceRegistry_organization(_ conte
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -21355,6 +21927,885 @@ func (ec *executionContext) fieldContext_ConnectorEdge_node(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _ContinualImprovementRegistry_id(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(gid.GID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_organization(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_organization(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ContinualImprovementRegistry().Organization(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.Organization)
+	fc.Result = res
+	return ec.marshalNOrganization2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐOrganization(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_organization(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Organization_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Organization_name(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Organization_logoUrl(ctx, field)
+			case "users":
+				return ec.fieldContext_Organization_users(ctx, field)
+			case "connectors":
+				return ec.fieldContext_Organization_connectors(ctx, field)
+			case "frameworks":
+				return ec.fieldContext_Organization_frameworks(ctx, field)
+			case "controls":
+				return ec.fieldContext_Organization_controls(ctx, field)
+			case "vendors":
+				return ec.fieldContext_Organization_vendors(ctx, field)
+			case "peoples":
+				return ec.fieldContext_Organization_peoples(ctx, field)
+			case "documents":
+				return ec.fieldContext_Organization_documents(ctx, field)
+			case "measures":
+				return ec.fieldContext_Organization_measures(ctx, field)
+			case "risks":
+				return ec.fieldContext_Organization_risks(ctx, field)
+			case "tasks":
+				return ec.fieldContext_Organization_tasks(ctx, field)
+			case "assets":
+				return ec.fieldContext_Organization_assets(ctx, field)
+			case "data":
+				return ec.fieldContext_Organization_data(ctx, field)
+			case "audits":
+				return ec.fieldContext_Organization_audits(ctx, field)
+			case "nonconformityRegistries":
+				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
+			case "complianceRegistries":
+				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Organization_snapshots(ctx, field)
+			case "trustCenter":
+				return ec.fieldContext_Organization_trustCenter(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Organization_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Organization_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Organization", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_referenceId(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_referenceId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReferenceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_referenceId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_description(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_audit(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_audit(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ContinualImprovementRegistry().Audit(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.Audit)
+	fc.Result = res
+	return ec.marshalNAudit2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐAudit(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_audit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Audit_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Audit_name(ctx, field)
+			case "organization":
+				return ec.fieldContext_Audit_organization(ctx, field)
+			case "framework":
+				return ec.fieldContext_Audit_framework(ctx, field)
+			case "validFrom":
+				return ec.fieldContext_Audit_validFrom(ctx, field)
+			case "validUntil":
+				return ec.fieldContext_Audit_validUntil(ctx, field)
+			case "report":
+				return ec.fieldContext_Audit_report(ctx, field)
+			case "reportUrl":
+				return ec.fieldContext_Audit_reportUrl(ctx, field)
+			case "state":
+				return ec.fieldContext_Audit_state(ctx, field)
+			case "controls":
+				return ec.fieldContext_Audit_controls(ctx, field)
+			case "showOnTrustCenter":
+				return ec.fieldContext_Audit_showOnTrustCenter(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Audit_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Audit_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Audit", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_source(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_owner(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_owner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ContinualImprovementRegistry().Owner(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.People)
+	fc.Result = res
+	return ec.marshalNPeople2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐPeople(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_owner(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_People_id(ctx, field)
+			case "fullName":
+				return ec.fieldContext_People_fullName(ctx, field)
+			case "primaryEmailAddress":
+				return ec.fieldContext_People_primaryEmailAddress(ctx, field)
+			case "additionalEmailAddresses":
+				return ec.fieldContext_People_additionalEmailAddresses(ctx, field)
+			case "kind":
+				return ec.fieldContext_People_kind(ctx, field)
+			case "position":
+				return ec.fieldContext_People_position(ctx, field)
+			case "contractStartDate":
+				return ec.fieldContext_People_contractStartDate(ctx, field)
+			case "contractEndDate":
+				return ec.fieldContext_People_contractEndDate(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_People_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_People_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type People", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_targetDate(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_targetDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TargetDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalODatetime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_targetDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Datetime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_status(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(coredata.ContinualImprovementRegistriesStatus)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ContinualImprovementRegistriesStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_priority(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_priority(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Priority, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(coredata.ContinualImprovementRegistriesPriority)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_priority(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ContinualImprovementRegistriesPriority does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_createdAt(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDatetime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Datetime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistry_updatedAt(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistry_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDatetime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistry_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Datetime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistryConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistryConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistryConnection_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ContinualImprovementRegistryConnection().TotalCount(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistryConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistryConnection",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistryConnection_edges(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistryConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistryConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.ContinualImprovementRegistryEdge)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistryEdge2ᚕᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistryConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistryConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_ContinualImprovementRegistryEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_ContinualImprovementRegistryEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ContinualImprovementRegistryEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistryConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistryConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistryConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(types.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistryConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistryConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistryEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistryEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistryEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(page.CursorKey)
+	fc.Result = res
+	return ec.marshalNCursorKey2githubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistryEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistryEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CursorKey does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ContinualImprovementRegistryEdge_node(ctx context.Context, field graphql.CollectedField, obj *types.ContinualImprovementRegistryEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ContinualImprovementRegistryEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ContinualImprovementRegistry)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistry2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ContinualImprovementRegistryEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ContinualImprovementRegistryEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_ContinualImprovementRegistry_id(ctx, field)
+			case "organization":
+				return ec.fieldContext_ContinualImprovementRegistry_organization(ctx, field)
+			case "referenceId":
+				return ec.fieldContext_ContinualImprovementRegistry_referenceId(ctx, field)
+			case "description":
+				return ec.fieldContext_ContinualImprovementRegistry_description(ctx, field)
+			case "audit":
+				return ec.fieldContext_ContinualImprovementRegistry_audit(ctx, field)
+			case "source":
+				return ec.fieldContext_ContinualImprovementRegistry_source(ctx, field)
+			case "owner":
+				return ec.fieldContext_ContinualImprovementRegistry_owner(ctx, field)
+			case "targetDate":
+				return ec.fieldContext_ContinualImprovementRegistry_targetDate(ctx, field)
+			case "status":
+				return ec.fieldContext_ContinualImprovementRegistry_status(ctx, field)
+			case "priority":
+				return ec.fieldContext_ContinualImprovementRegistry_priority(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_ContinualImprovementRegistry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_ContinualImprovementRegistry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ContinualImprovementRegistry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Control_id(ctx context.Context, field graphql.CollectedField, obj *types.Control) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Control_id(ctx, field)
 	if err != nil {
@@ -22425,6 +23876,56 @@ func (ec *executionContext) fieldContext_CreateComplianceRegistryPayload_complia
 				return ec.fieldContext_ComplianceRegistryEdge_node(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ComplianceRegistryEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateContinualImprovementRegistryPayload_continualImprovementRegistryEdge(ctx context.Context, field graphql.CollectedField, obj *types.CreateContinualImprovementRegistryPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateContinualImprovementRegistryPayload_continualImprovementRegistryEdge(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ContinualImprovementRegistryEdge, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ContinualImprovementRegistryEdge)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistryEdge2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateContinualImprovementRegistryPayload_continualImprovementRegistryEdge(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateContinualImprovementRegistryPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_ContinualImprovementRegistryEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_ContinualImprovementRegistryEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ContinualImprovementRegistryEdge", field.Name)
 		},
 	}
 	return fc, nil
@@ -24316,6 +25817,8 @@ func (ec *executionContext) fieldContext_Datum_organization(_ context.Context, f
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -24867,6 +26370,50 @@ func (ec *executionContext) _DeleteComplianceRegistryPayload_deletedComplianceRe
 func (ec *executionContext) fieldContext_DeleteComplianceRegistryPayload_deletedComplianceRegistryId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteComplianceRegistryPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteContinualImprovementRegistryPayload_deletedContinualImprovementRegistryId(ctx context.Context, field graphql.CollectedField, obj *types.DeleteContinualImprovementRegistryPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeleteContinualImprovementRegistryPayload_deletedContinualImprovementRegistryId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedContinualImprovementRegistryID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(gid.GID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeleteContinualImprovementRegistryPayload_deletedContinualImprovementRegistryId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteContinualImprovementRegistryPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -26687,6 +28234,8 @@ func (ec *executionContext) fieldContext_Document_organization(_ context.Context
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -29854,6 +31403,8 @@ func (ec *executionContext) fieldContext_Framework_organization(_ context.Contex
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -37304,6 +38855,183 @@ func (ec *executionContext) fieldContext_Mutation_deleteComplianceRegistry(ctx c
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createContinualImprovementRegistry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateContinualImprovementRegistry(rctx, fc.Args["input"].(types.CreateContinualImprovementRegistryInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.CreateContinualImprovementRegistryPayload)
+	fc.Result = res
+	return ec.marshalNCreateContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateContinualImprovementRegistryPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "continualImprovementRegistryEdge":
+				return ec.fieldContext_CreateContinualImprovementRegistryPayload_continualImprovementRegistryEdge(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateContinualImprovementRegistryPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createContinualImprovementRegistry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateContinualImprovementRegistry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateContinualImprovementRegistry(rctx, fc.Args["input"].(types.UpdateContinualImprovementRegistryInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.UpdateContinualImprovementRegistryPayload)
+	fc.Result = res
+	return ec.marshalNUpdateContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateContinualImprovementRegistryPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "continualImprovementRegistry":
+				return ec.fieldContext_UpdateContinualImprovementRegistryPayload_continualImprovementRegistry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UpdateContinualImprovementRegistryPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateContinualImprovementRegistry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteContinualImprovementRegistry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteContinualImprovementRegistry(rctx, fc.Args["input"].(types.DeleteContinualImprovementRegistryInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.DeleteContinualImprovementRegistryPayload)
+	fc.Result = res
+	return ec.marshalNDeleteContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteContinualImprovementRegistryPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteContinualImprovementRegistry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "deletedContinualImprovementRegistryId":
+				return ec.fieldContext_DeleteContinualImprovementRegistryPayload_deletedContinualImprovementRegistryId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteContinualImprovementRegistryPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteContinualImprovementRegistry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createSnapshot(ctx, field)
 	if err != nil {
@@ -37541,6 +39269,8 @@ func (ec *executionContext) fieldContext_NonconformityRegistry_organization(_ co
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -39455,6 +41185,69 @@ func (ec *executionContext) fieldContext_Organization_complianceRegistries(ctx c
 	return fc, nil
 }
 
+func (ec *executionContext) _Organization_continualImprovementRegistries(ctx context.Context, field graphql.CollectedField, obj *types.Organization) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Organization().ContinualImprovementRegistries(rctx, obj, fc.Args["first"].(*int), fc.Args["after"].(*page.CursorKey), fc.Args["last"].(*int), fc.Args["before"].(*page.CursorKey), fc.Args["orderBy"].(*types.ContinualImprovementRegistriesOrderBy))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ContinualImprovementRegistryConnection)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistryConnection2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Organization_continualImprovementRegistries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Organization",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "totalCount":
+				return ec.fieldContext_ContinualImprovementRegistryConnection_totalCount(ctx, field)
+			case "edges":
+				return ec.fieldContext_ContinualImprovementRegistryConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_ContinualImprovementRegistryConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ContinualImprovementRegistryConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Organization_continualImprovementRegistries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Organization_snapshots(ctx context.Context, field graphql.CollectedField, obj *types.Organization) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Organization_snapshots(ctx, field)
 	if err != nil {
@@ -39886,6 +41679,8 @@ func (ec *executionContext) fieldContext_OrganizationEdge_node(_ context.Context
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -42360,6 +44155,8 @@ func (ec *executionContext) fieldContext_Risk_organization(_ context.Context, fi
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -43179,6 +44976,8 @@ func (ec *executionContext) fieldContext_Snapshot_organization(_ context.Context
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -44078,6 +45877,8 @@ func (ec *executionContext) fieldContext_Task_organization(_ context.Context, fi
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -44866,6 +46667,8 @@ func (ec *executionContext) fieldContext_TrustCenter_organization(_ context.Cont
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -45906,6 +47709,76 @@ func (ec *executionContext) fieldContext_UpdateComplianceRegistryPayload_complia
 	return fc, nil
 }
 
+func (ec *executionContext) _UpdateContinualImprovementRegistryPayload_continualImprovementRegistry(ctx context.Context, field graphql.CollectedField, obj *types.UpdateContinualImprovementRegistryPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UpdateContinualImprovementRegistryPayload_continualImprovementRegistry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ContinualImprovementRegistry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ContinualImprovementRegistry)
+	fc.Result = res
+	return ec.marshalNContinualImprovementRegistry2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UpdateContinualImprovementRegistryPayload_continualImprovementRegistry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UpdateContinualImprovementRegistryPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_ContinualImprovementRegistry_id(ctx, field)
+			case "organization":
+				return ec.fieldContext_ContinualImprovementRegistry_organization(ctx, field)
+			case "referenceId":
+				return ec.fieldContext_ContinualImprovementRegistry_referenceId(ctx, field)
+			case "description":
+				return ec.fieldContext_ContinualImprovementRegistry_description(ctx, field)
+			case "audit":
+				return ec.fieldContext_ContinualImprovementRegistry_audit(ctx, field)
+			case "source":
+				return ec.fieldContext_ContinualImprovementRegistry_source(ctx, field)
+			case "owner":
+				return ec.fieldContext_ContinualImprovementRegistry_owner(ctx, field)
+			case "targetDate":
+				return ec.fieldContext_ContinualImprovementRegistry_targetDate(ctx, field)
+			case "status":
+				return ec.fieldContext_ContinualImprovementRegistry_status(ctx, field)
+			case "priority":
+				return ec.fieldContext_ContinualImprovementRegistry_priority(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_ContinualImprovementRegistry_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_ContinualImprovementRegistry_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ContinualImprovementRegistry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UpdateControlPayload_control(ctx context.Context, field graphql.CollectedField, obj *types.UpdateControlPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UpdateControlPayload_control(ctx, field)
 	if err != nil {
@@ -46459,6 +48332,8 @@ func (ec *executionContext) fieldContext_UpdateOrganizationPayload_organization(
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -48262,6 +50137,8 @@ func (ec *executionContext) fieldContext_Vendor_organization(_ context.Context, 
 				return ec.fieldContext_Organization_nonconformityRegistries(ctx, field)
 			case "complianceRegistries":
 				return ec.fieldContext_Organization_complianceRegistries(ctx, field)
+			case "continualImprovementRegistries":
+				return ec.fieldContext_Organization_continualImprovementRegistries(ctx, field)
 			case "snapshots":
 				return ec.fieldContext_Organization_snapshots(ctx, field)
 			case "trustCenter":
@@ -55608,6 +57485,40 @@ func (ec *executionContext) unmarshalInputConnectorOrder(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputContinualImprovementRegistriesOrder(ctx context.Context, obj any) (types.ContinualImprovementRegistriesOrderBy, error) {
+	var it types.ContinualImprovementRegistriesOrderBy
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"direction", "field"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "direction":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			data, err := ec.unmarshalNOrderDirection2githubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direction = data
+		case "field":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			data, err := ec.unmarshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Field = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputControlFilter(ctx context.Context, obj any) (types.ControlFilter, error) {
 	var it types.ControlFilter
 	asMap := map[string]any{}
@@ -55909,6 +57820,89 @@ func (ec *executionContext) unmarshalInputCreateComplianceRegistryInput(ctx cont
 				return it, err
 			}
 			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateContinualImprovementRegistryInput(ctx context.Context, obj any) (types.CreateContinualImprovementRegistryInput, error) {
+	var it types.CreateContinualImprovementRegistryInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"organizationId", "referenceId", "description", "auditId", "source", "ownerId", "targetDate", "status", "priority"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "organizationId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("organizationId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrganizationID = data
+		case "referenceId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("referenceId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ReferenceID = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "auditId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("auditId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AuditID = data
+		case "source":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Source = data
+		case "ownerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ownerId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OwnerID = data
+		case "targetDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetDate"))
+			data, err := ec.unmarshalODatetime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetDate = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		case "priority":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priority"))
+			data, err := ec.unmarshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Priority = data
 		}
 	}
 
@@ -57419,6 +59413,33 @@ func (ec *executionContext) unmarshalInputDeleteComplianceRegistryInput(ctx cont
 				return it, err
 			}
 			it.ComplianceRegistryID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteContinualImprovementRegistryInput(ctx context.Context, obj any) (types.DeleteContinualImprovementRegistryInput, error) {
+	var it types.DeleteContinualImprovementRegistryInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"continualImprovementRegistryId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "continualImprovementRegistryId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("continualImprovementRegistryId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ContinualImprovementRegistryID = data
 		}
 	}
 
@@ -59484,6 +61505,89 @@ func (ec *executionContext) unmarshalInputUpdateComplianceRegistryInput(ctx cont
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateContinualImprovementRegistryInput(ctx context.Context, obj any) (types.UpdateContinualImprovementRegistryInput, error) {
+	var it types.UpdateContinualImprovementRegistryInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "referenceId", "description", "auditId", "source", "ownerId", "targetDate", "status", "priority"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "referenceId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("referenceId"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ReferenceID = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "auditId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("auditId"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AuditID = data
+		case "source":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Source = data
+		case "ownerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ownerId"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OwnerID = data
+		case "targetDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetDate"))
+			data, err := ec.unmarshalODatetime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetDate = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		case "priority":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priority"))
+			data, err := ec.unmarshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Priority = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateControlInput(ctx context.Context, obj any) (types.UpdateControlInput, error) {
 	var it types.UpdateControlInput
 	asMap := map[string]any{}
@@ -61261,6 +63365,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Control(ctx, sel, obj)
+	case types.ContinualImprovementRegistry:
+		return ec._ContinualImprovementRegistry(ctx, sel, &obj)
+	case *types.ContinualImprovementRegistry:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ContinualImprovementRegistry(ctx, sel, obj)
 	case types.Connector:
 		return ec._Connector(ctx, sel, &obj)
 	case *types.Connector:
@@ -62689,6 +64800,308 @@ func (ec *executionContext) _ConnectorEdge(ctx context.Context, sel ast.Selectio
 	return out
 }
 
+var continualImprovementRegistryImplementors = []string{"ContinualImprovementRegistry", "Node"}
+
+func (ec *executionContext) _ContinualImprovementRegistry(ctx context.Context, sel ast.SelectionSet, obj *types.ContinualImprovementRegistry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, continualImprovementRegistryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ContinualImprovementRegistry")
+		case "id":
+			out.Values[i] = ec._ContinualImprovementRegistry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "organization":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ContinualImprovementRegistry_organization(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "referenceId":
+			out.Values[i] = ec._ContinualImprovementRegistry_referenceId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "description":
+			out.Values[i] = ec._ContinualImprovementRegistry_description(ctx, field, obj)
+		case "audit":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ContinualImprovementRegistry_audit(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "source":
+			out.Values[i] = ec._ContinualImprovementRegistry_source(ctx, field, obj)
+		case "owner":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ContinualImprovementRegistry_owner(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "targetDate":
+			out.Values[i] = ec._ContinualImprovementRegistry_targetDate(ctx, field, obj)
+		case "status":
+			out.Values[i] = ec._ContinualImprovementRegistry_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "priority":
+			out.Values[i] = ec._ContinualImprovementRegistry_priority(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			out.Values[i] = ec._ContinualImprovementRegistry_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updatedAt":
+			out.Values[i] = ec._ContinualImprovementRegistry_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var continualImprovementRegistryConnectionImplementors = []string{"ContinualImprovementRegistryConnection"}
+
+func (ec *executionContext) _ContinualImprovementRegistryConnection(ctx context.Context, sel ast.SelectionSet, obj *types.ContinualImprovementRegistryConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, continualImprovementRegistryConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ContinualImprovementRegistryConnection")
+		case "totalCount":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ContinualImprovementRegistryConnection_totalCount(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "edges":
+			out.Values[i] = ec._ContinualImprovementRegistryConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "pageInfo":
+			out.Values[i] = ec._ContinualImprovementRegistryConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var continualImprovementRegistryEdgeImplementors = []string{"ContinualImprovementRegistryEdge"}
+
+func (ec *executionContext) _ContinualImprovementRegistryEdge(ctx context.Context, sel ast.SelectionSet, obj *types.ContinualImprovementRegistryEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, continualImprovementRegistryEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ContinualImprovementRegistryEdge")
+		case "cursor":
+			out.Values[i] = ec._ContinualImprovementRegistryEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._ContinualImprovementRegistryEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var controlImplementors = []string{"Control", "Node"}
 
 func (ec *executionContext) _Control(ctx context.Context, sel ast.SelectionSet, obj *types.Control) graphql.Marshaler {
@@ -63155,6 +65568,45 @@ func (ec *executionContext) _CreateComplianceRegistryPayload(ctx context.Context
 			out.Values[i] = graphql.MarshalString("CreateComplianceRegistryPayload")
 		case "complianceRegistryEdge":
 			out.Values[i] = ec._CreateComplianceRegistryPayload_complianceRegistryEdge(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var createContinualImprovementRegistryPayloadImplementors = []string{"CreateContinualImprovementRegistryPayload"}
+
+func (ec *executionContext) _CreateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, obj *types.CreateContinualImprovementRegistryPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createContinualImprovementRegistryPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateContinualImprovementRegistryPayload")
+		case "continualImprovementRegistryEdge":
+			out.Values[i] = ec._CreateContinualImprovementRegistryPayload_continualImprovementRegistryEdge(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -64573,6 +67025,45 @@ func (ec *executionContext) _DeleteComplianceRegistryPayload(ctx context.Context
 			out.Values[i] = graphql.MarshalString("DeleteComplianceRegistryPayload")
 		case "deletedComplianceRegistryId":
 			out.Values[i] = ec._DeleteComplianceRegistryPayload_deletedComplianceRegistryId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteContinualImprovementRegistryPayloadImplementors = []string{"DeleteContinualImprovementRegistryPayload"}
+
+func (ec *executionContext) _DeleteContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, obj *types.DeleteContinualImprovementRegistryPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteContinualImprovementRegistryPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteContinualImprovementRegistryPayload")
+		case "deletedContinualImprovementRegistryId":
+			out.Values[i] = ec._DeleteContinualImprovementRegistryPayload_deletedContinualImprovementRegistryId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -68435,6 +70926,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createContinualImprovementRegistry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createContinualImprovementRegistry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateContinualImprovementRegistry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateContinualImprovementRegistry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteContinualImprovementRegistry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteContinualImprovementRegistry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createSnapshot":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createSnapshot(ctx, field)
@@ -69346,6 +71858,42 @@ func (ec *executionContext) _Organization(ctx context.Context, sel ast.Selection
 					}
 				}()
 				res = ec._Organization_complianceRegistries(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "continualImprovementRegistries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Organization_continualImprovementRegistries(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -71759,6 +74307,45 @@ func (ec *executionContext) _UpdateComplianceRegistryPayload(ctx context.Context
 			out.Values[i] = graphql.MarshalString("UpdateComplianceRegistryPayload")
 		case "complianceRegistry":
 			out.Values[i] = ec._UpdateComplianceRegistryPayload_complianceRegistry(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var updateContinualImprovementRegistryPayloadImplementors = []string{"UpdateContinualImprovementRegistryPayload"}
+
+func (ec *executionContext) _UpdateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, obj *types.UpdateContinualImprovementRegistryPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, updateContinualImprovementRegistryPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UpdateContinualImprovementRegistryPayload")
+		case "continualImprovementRegistry":
+			out.Values[i] = ec._UpdateContinualImprovementRegistryPayload_continualImprovementRegistry(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -75629,6 +78216,178 @@ var (
 	}
 )
 
+func (ec *executionContext) unmarshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField(ctx context.Context, v any) (coredata.ContinualImprovementRegistriesOrderField, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField[tmp]
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField(ctx context.Context, sel ast.SelectionSet, v coredata.ContinualImprovementRegistriesOrderField) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(marshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField[v])
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+var (
+	unmarshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField = map[string]coredata.ContinualImprovementRegistriesOrderField{
+		"CREATED_AT":   coredata.ContinualImprovementRegistriesOrderFieldCreatedAt,
+		"REFERENCE_ID": coredata.ContinualImprovementRegistriesOrderFieldReferenceId,
+		"TARGET_DATE":  coredata.ContinualImprovementRegistriesOrderFieldTargetDate,
+		"STATUS":       coredata.ContinualImprovementRegistriesOrderFieldStatus,
+		"PRIORITY":     coredata.ContinualImprovementRegistriesOrderFieldPriority,
+	}
+	marshalNContinualImprovementRegistriesOrderField2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesOrderField = map[coredata.ContinualImprovementRegistriesOrderField]string{
+		coredata.ContinualImprovementRegistriesOrderFieldCreatedAt:   "CREATED_AT",
+		coredata.ContinualImprovementRegistriesOrderFieldReferenceId: "REFERENCE_ID",
+		coredata.ContinualImprovementRegistriesOrderFieldTargetDate:  "TARGET_DATE",
+		coredata.ContinualImprovementRegistriesOrderFieldStatus:      "STATUS",
+		coredata.ContinualImprovementRegistriesOrderFieldPriority:    "PRIORITY",
+	}
+)
+
+func (ec *executionContext) unmarshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx context.Context, v any) (coredata.ContinualImprovementRegistriesPriority, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority[tmp]
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx context.Context, sel ast.SelectionSet, v coredata.ContinualImprovementRegistriesPriority) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(marshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority[v])
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+var (
+	unmarshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority = map[string]coredata.ContinualImprovementRegistriesPriority{
+		"LOW":    coredata.ContinualImprovementRegistriesPriorityLow,
+		"MEDIUM": coredata.ContinualImprovementRegistriesPriorityMedium,
+		"HIGH":   coredata.ContinualImprovementRegistriesPriorityHigh,
+	}
+	marshalNContinualImprovementRegistriesPriority2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority = map[coredata.ContinualImprovementRegistriesPriority]string{
+		coredata.ContinualImprovementRegistriesPriorityLow:    "LOW",
+		coredata.ContinualImprovementRegistriesPriorityMedium: "MEDIUM",
+		coredata.ContinualImprovementRegistriesPriorityHigh:   "HIGH",
+	}
+)
+
+func (ec *executionContext) unmarshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx context.Context, v any) (coredata.ContinualImprovementRegistriesStatus, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus[tmp]
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx context.Context, sel ast.SelectionSet, v coredata.ContinualImprovementRegistriesStatus) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(marshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus[v])
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+var (
+	unmarshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus = map[string]coredata.ContinualImprovementRegistriesStatus{
+		"OPEN":        coredata.ContinualImprovementRegistriesStatusOpen,
+		"IN_PROGRESS": coredata.ContinualImprovementRegistriesStatusInProgress,
+		"CLOSED":      coredata.ContinualImprovementRegistriesStatusClosed,
+	}
+	marshalNContinualImprovementRegistriesStatus2githubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus = map[coredata.ContinualImprovementRegistriesStatus]string{
+		coredata.ContinualImprovementRegistriesStatusOpen:       "OPEN",
+		coredata.ContinualImprovementRegistriesStatusInProgress: "IN_PROGRESS",
+		coredata.ContinualImprovementRegistriesStatusClosed:     "CLOSED",
+	}
+)
+
+func (ec *executionContext) marshalNContinualImprovementRegistry2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistry(ctx context.Context, sel ast.SelectionSet, v *types.ContinualImprovementRegistry) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ContinualImprovementRegistry(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistryConnection2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryConnection(ctx context.Context, sel ast.SelectionSet, v types.ContinualImprovementRegistryConnection) graphql.Marshaler {
+	return ec._ContinualImprovementRegistryConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistryConnection2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryConnection(ctx context.Context, sel ast.SelectionSet, v *types.ContinualImprovementRegistryConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ContinualImprovementRegistryConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistryEdge2ᚕᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*types.ContinualImprovementRegistryEdge) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNContinualImprovementRegistryEdge2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNContinualImprovementRegistryEdge2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistryEdge(ctx context.Context, sel ast.SelectionSet, v *types.ContinualImprovementRegistryEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ContinualImprovementRegistryEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNControl2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControl(ctx context.Context, sel ast.SelectionSet, v *types.Control) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -75818,6 +78577,25 @@ func (ec *executionContext) marshalNCreateComplianceRegistryPayload2ᚖgithubᚗ
 		return graphql.Null
 	}
 	return ec._CreateComplianceRegistryPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCreateContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateContinualImprovementRegistryInput(ctx context.Context, v any) (types.CreateContinualImprovementRegistryInput, error) {
+	res, err := ec.unmarshalInputCreateContinualImprovementRegistryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCreateContinualImprovementRegistryPayload2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v types.CreateContinualImprovementRegistryPayload) graphql.Marshaler {
+	return ec._CreateContinualImprovementRegistryPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v *types.CreateContinualImprovementRegistryPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateContinualImprovementRegistryPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNCreateControlAuditMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlAuditMappingInput(ctx context.Context, v any) (types.CreateControlAuditMappingInput, error) {
@@ -76567,6 +79345,25 @@ func (ec *executionContext) marshalNDeleteComplianceRegistryPayload2ᚖgithubᚗ
 		return graphql.Null
 	}
 	return ec._DeleteComplianceRegistryPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDeleteContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteContinualImprovementRegistryInput(ctx context.Context, v any) (types.DeleteContinualImprovementRegistryInput, error) {
+	res, err := ec.unmarshalInputDeleteContinualImprovementRegistryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDeleteContinualImprovementRegistryPayload2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v types.DeleteContinualImprovementRegistryPayload) graphql.Marshaler {
+	return ec._DeleteContinualImprovementRegistryPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v *types.DeleteContinualImprovementRegistryPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteContinualImprovementRegistryPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDeleteControlAuditMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlAuditMappingInput(ctx context.Context, v any) (types.DeleteControlAuditMappingInput, error) {
@@ -79333,6 +82130,25 @@ func (ec *executionContext) marshalNUpdateComplianceRegistryPayload2ᚖgithubᚗ
 	return ec._UpdateComplianceRegistryPayload(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNUpdateContinualImprovementRegistryInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateContinualImprovementRegistryInput(ctx context.Context, v any) (types.UpdateContinualImprovementRegistryInput, error) {
+	res, err := ec.unmarshalInputUpdateContinualImprovementRegistryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpdateContinualImprovementRegistryPayload2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v types.UpdateContinualImprovementRegistryPayload) graphql.Marshaler {
+	return ec._UpdateContinualImprovementRegistryPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUpdateContinualImprovementRegistryPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateContinualImprovementRegistryPayload(ctx context.Context, sel ast.SelectionSet, v *types.UpdateContinualImprovementRegistryPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UpdateContinualImprovementRegistryPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNUpdateControlInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐUpdateControlInput(ctx context.Context, v any) (types.UpdateControlInput, error) {
 	res, err := ec.unmarshalInputUpdateControlInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -80963,6 +83779,78 @@ func (ec *executionContext) unmarshalOConnectorOrder2ᚖgithubᚗcomᚋgetprobo�
 	res, err := ec.unmarshalInputConnectorOrder(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
+
+func (ec *executionContext) unmarshalOContinualImprovementRegistriesOrder2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐContinualImprovementRegistriesOrderBy(ctx context.Context, v any) (*types.ContinualImprovementRegistriesOrderBy, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputContinualImprovementRegistriesOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx context.Context, v any) (*coredata.ContinualImprovementRegistriesPriority, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority[tmp]
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority(ctx context.Context, sel ast.SelectionSet, v *coredata.ContinualImprovementRegistriesPriority) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalString(marshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority[*v])
+	return res
+}
+
+var (
+	unmarshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority = map[string]coredata.ContinualImprovementRegistriesPriority{
+		"LOW":    coredata.ContinualImprovementRegistriesPriorityLow,
+		"MEDIUM": coredata.ContinualImprovementRegistriesPriorityMedium,
+		"HIGH":   coredata.ContinualImprovementRegistriesPriorityHigh,
+	}
+	marshalOContinualImprovementRegistriesPriority2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesPriority = map[coredata.ContinualImprovementRegistriesPriority]string{
+		coredata.ContinualImprovementRegistriesPriorityLow:    "LOW",
+		coredata.ContinualImprovementRegistriesPriorityMedium: "MEDIUM",
+		coredata.ContinualImprovementRegistriesPriorityHigh:   "HIGH",
+	}
+)
+
+func (ec *executionContext) unmarshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx context.Context, v any) (*coredata.ContinualImprovementRegistriesStatus, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := unmarshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus[tmp]
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus(ctx context.Context, sel ast.SelectionSet, v *coredata.ContinualImprovementRegistriesStatus) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalString(marshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus[*v])
+	return res
+}
+
+var (
+	unmarshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus = map[string]coredata.ContinualImprovementRegistriesStatus{
+		"OPEN":        coredata.ContinualImprovementRegistriesStatusOpen,
+		"IN_PROGRESS": coredata.ContinualImprovementRegistriesStatusInProgress,
+		"CLOSED":      coredata.ContinualImprovementRegistriesStatusClosed,
+	}
+	marshalOContinualImprovementRegistriesStatus2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋcoredataᚐContinualImprovementRegistriesStatus = map[coredata.ContinualImprovementRegistriesStatus]string{
+		coredata.ContinualImprovementRegistriesStatusOpen:       "OPEN",
+		coredata.ContinualImprovementRegistriesStatusInProgress: "IN_PROGRESS",
+		coredata.ContinualImprovementRegistriesStatusClosed:     "CLOSED",
+	}
+)
 
 func (ec *executionContext) unmarshalOControlFilter2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControlFilter(ctx context.Context, v any) (*types.ControlFilter, error) {
 	if v == nil {

@@ -167,6 +167,29 @@ type ConnectorOrder struct {
 	Direction page.OrderDirection          `json:"direction"`
 }
 
+type ContinualImprovementRegistry struct {
+	ID           gid.GID                                         `json:"id"`
+	Organization *Organization                                   `json:"organization"`
+	ReferenceID  string                                          `json:"referenceId"`
+	Description  *string                                         `json:"description,omitempty"`
+	Audit        *Audit                                          `json:"audit"`
+	Source       *string                                         `json:"source,omitempty"`
+	Owner        *People                                         `json:"owner"`
+	TargetDate   *time.Time                                      `json:"targetDate,omitempty"`
+	Status       coredata.ContinualImprovementRegistriesStatus   `json:"status"`
+	Priority     coredata.ContinualImprovementRegistriesPriority `json:"priority"`
+	CreatedAt    time.Time                                       `json:"createdAt"`
+	UpdatedAt    time.Time                                       `json:"updatedAt"`
+}
+
+func (ContinualImprovementRegistry) IsNode()             {}
+func (this ContinualImprovementRegistry) GetID() gid.GID { return this.ID }
+
+type ContinualImprovementRegistryEdge struct {
+	Cursor page.CursorKey                `json:"cursor"`
+	Node   *ContinualImprovementRegistry `json:"node"`
+}
+
 type Control struct {
 	ID                     gid.GID                `json:"id"`
 	SectionTitle           string                 `json:"sectionTitle"`
@@ -240,6 +263,22 @@ type CreateComplianceRegistryInput struct {
 
 type CreateComplianceRegistryPayload struct {
 	ComplianceRegistryEdge *ComplianceRegistryEdge `json:"complianceRegistryEdge"`
+}
+
+type CreateContinualImprovementRegistryInput struct {
+	OrganizationID gid.GID                                         `json:"organizationId"`
+	ReferenceID    string                                          `json:"referenceId"`
+	Description    *string                                         `json:"description,omitempty"`
+	AuditID        gid.GID                                         `json:"auditId"`
+	Source         *string                                         `json:"source,omitempty"`
+	OwnerID        gid.GID                                         `json:"ownerId"`
+	TargetDate     *time.Time                                      `json:"targetDate,omitempty"`
+	Status         coredata.ContinualImprovementRegistriesStatus   `json:"status"`
+	Priority       coredata.ContinualImprovementRegistriesPriority `json:"priority"`
+}
+
+type CreateContinualImprovementRegistryPayload struct {
+	ContinualImprovementRegistryEdge *ContinualImprovementRegistryEdge `json:"continualImprovementRegistryEdge"`
 }
 
 type CreateControlAuditMappingInput struct {
@@ -593,6 +632,14 @@ type DeleteComplianceRegistryInput struct {
 
 type DeleteComplianceRegistryPayload struct {
 	DeletedComplianceRegistryID gid.GID `json:"deletedComplianceRegistryId"`
+}
+
+type DeleteContinualImprovementRegistryInput struct {
+	ContinualImprovementRegistryID gid.GID `json:"continualImprovementRegistryId"`
+}
+
+type DeleteContinualImprovementRegistryPayload struct {
+	DeletedContinualImprovementRegistryID gid.GID `json:"deletedContinualImprovementRegistryId"`
 }
 
 type DeleteControlAuditMappingInput struct {
@@ -1065,28 +1112,29 @@ type NonconformityRegistryEdge struct {
 }
 
 type Organization struct {
-	ID                      gid.GID                          `json:"id"`
-	Name                    string                           `json:"name"`
-	LogoURL                 *string                          `json:"logoUrl,omitempty"`
-	Users                   *UserConnection                  `json:"users"`
-	Connectors              *ConnectorConnection             `json:"connectors"`
-	Frameworks              *FrameworkConnection             `json:"frameworks"`
-	Controls                *ControlConnection               `json:"controls"`
-	Vendors                 *VendorConnection                `json:"vendors"`
-	Peoples                 *PeopleConnection                `json:"peoples"`
-	Documents               *DocumentConnection              `json:"documents"`
-	Measures                *MeasureConnection               `json:"measures"`
-	Risks                   *RiskConnection                  `json:"risks"`
-	Tasks                   *TaskConnection                  `json:"tasks"`
-	Assets                  *AssetConnection                 `json:"assets"`
-	Data                    *DatumConnection                 `json:"data"`
-	Audits                  *AuditConnection                 `json:"audits"`
-	NonconformityRegistries *NonconformityRegistryConnection `json:"nonconformityRegistries"`
-	ComplianceRegistries    *ComplianceRegistryConnection    `json:"complianceRegistries"`
-	Snapshots               *SnapshotConnection              `json:"snapshots"`
-	TrustCenter             *TrustCenter                     `json:"trustCenter,omitempty"`
-	CreatedAt               time.Time                        `json:"createdAt"`
-	UpdatedAt               time.Time                        `json:"updatedAt"`
+	ID                             gid.GID                                 `json:"id"`
+	Name                           string                                  `json:"name"`
+	LogoURL                        *string                                 `json:"logoUrl,omitempty"`
+	Users                          *UserConnection                         `json:"users"`
+	Connectors                     *ConnectorConnection                    `json:"connectors"`
+	Frameworks                     *FrameworkConnection                    `json:"frameworks"`
+	Controls                       *ControlConnection                      `json:"controls"`
+	Vendors                        *VendorConnection                       `json:"vendors"`
+	Peoples                        *PeopleConnection                       `json:"peoples"`
+	Documents                      *DocumentConnection                     `json:"documents"`
+	Measures                       *MeasureConnection                      `json:"measures"`
+	Risks                          *RiskConnection                         `json:"risks"`
+	Tasks                          *TaskConnection                         `json:"tasks"`
+	Assets                         *AssetConnection                        `json:"assets"`
+	Data                           *DatumConnection                        `json:"data"`
+	Audits                         *AuditConnection                        `json:"audits"`
+	NonconformityRegistries        *NonconformityRegistryConnection        `json:"nonconformityRegistries"`
+	ComplianceRegistries           *ComplianceRegistryConnection           `json:"complianceRegistries"`
+	ContinualImprovementRegistries *ContinualImprovementRegistryConnection `json:"continualImprovementRegistries"`
+	Snapshots                      *SnapshotConnection                     `json:"snapshots"`
+	TrustCenter                    *TrustCenter                            `json:"trustCenter,omitempty"`
+	CreatedAt                      time.Time                               `json:"createdAt"`
+	UpdatedAt                      time.Time                               `json:"updatedAt"`
 }
 
 func (Organization) IsNode()             {}
@@ -1389,6 +1437,22 @@ type UpdateComplianceRegistryInput struct {
 
 type UpdateComplianceRegistryPayload struct {
 	ComplianceRegistry *ComplianceRegistry `json:"complianceRegistry"`
+}
+
+type UpdateContinualImprovementRegistryInput struct {
+	ID          gid.GID                                          `json:"id"`
+	ReferenceID *string                                          `json:"referenceId,omitempty"`
+	Description *string                                          `json:"description,omitempty"`
+	AuditID     *gid.GID                                         `json:"auditId,omitempty"`
+	Source      *string                                          `json:"source,omitempty"`
+	OwnerID     *gid.GID                                         `json:"ownerId,omitempty"`
+	TargetDate  *time.Time                                       `json:"targetDate,omitempty"`
+	Status      *coredata.ContinualImprovementRegistriesStatus   `json:"status,omitempty"`
+	Priority    *coredata.ContinualImprovementRegistriesPriority `json:"priority,omitempty"`
+}
+
+type UpdateContinualImprovementRegistryPayload struct {
+	ContinualImprovementRegistry *ContinualImprovementRegistry `json:"continualImprovementRegistry"`
 }
 
 type UpdateControlInput struct {

@@ -78,3 +78,4 @@ export { IconChevronUp } from "./IconChevronUp.tsx";
 export { IconBlock } from "./IconBlock.tsx";
 export { IconChevronDown } from "./IconChevronDown.tsx";
 export { IconPageCross } from "./IconPageCross.tsx";
+export { IconRotateCw } from "./IconRotateCw.tsx";

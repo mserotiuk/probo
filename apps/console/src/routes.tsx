@@ -32,6 +32,7 @@ import { trustCenterRoutes } from "./routes/trustCenterRoutes.ts";
 import { nonconformityRegistryRoutes } from "./routes/nonconformityRegistryRoutes.ts";
 import { complianceRegistryRoutes } from "./routes/complianceRegistryRoutes.ts";
 import { snapshotsRoutes } from "./routes/snapshotsRoutes.ts";
+import { continualImprovementRegistryRoutes } from "./routes/continualImprovementRegistryRoutes.ts";
 import { lazy } from "@probo/react-lazy";
 
 export type AppRoute = Omit<RouteObject, "Component" | "children"> & {
@@ -155,6 +156,7 @@ const routes = [
       ...nonconformityRegistryRoutes,
       ...complianceRegistryRoutes,
       ...snapshotsRoutes,
+      ...continualImprovementRegistryRoutes,
       ...trustCenterRoutes,
       {
         path: "*",

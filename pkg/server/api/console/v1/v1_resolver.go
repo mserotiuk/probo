@@ -287,6 +287,73 @@ func (r *complianceRegistryConnectionResolver) TotalCount(ctx context.Context, o
 	panic(fmt.Errorf("unsupported resolver: %T", obj.Resolver))
 }
 
+// Organization is the resolver for the organization field.
+func (r *continualImprovementRegistryResolver) Organization(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.Organization, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ContinualImprovementRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry: %w", err))
+	}
+
+	organization, err := prb.Organizations.Get(ctx, registry.OrganizationID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry organization: %w", err))
+	}
+
+	return types.NewOrganization(organization), nil
+}
+
+// Audit is the resolver for the audit field.
+func (r *continualImprovementRegistryResolver) Audit(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.Audit, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ContinualImprovementRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry: %w", err))
+	}
+
+	audit, err := prb.Audits.Get(ctx, registry.AuditID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry audit: %w", err))
+	}
+
+	return types.NewAudit(audit), nil
+}
+
+// Owner is the resolver for the owner field.
+func (r *continualImprovementRegistryResolver) Owner(ctx context.Context, obj *types.ContinualImprovementRegistry) (*types.People, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	registry, err := prb.ContinualImprovementRegistries.Get(ctx, obj.ID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry: %w", err))
+	}
+
+	people, err := prb.Peoples.Get(ctx, registry.OwnerID)
+	if err != nil {
+		panic(fmt.Errorf("cannot get continual improvement registry owner: %w", err))
+	}
+
+	return types.NewPeople(people), nil
+}
+
+// TotalCount is the resolver for the totalCount field.
+func (r *continualImprovementRegistryConnectionResolver) TotalCount(ctx context.Context, obj *types.ContinualImprovementRegistryConnection) (int, error) {
+	prb := r.ProboService(ctx, obj.ParentID.TenantID())
+
+	switch obj.Resolver.(type) {
+	case *organizationResolver:
+		count, err := prb.ContinualImprovementRegistries.CountByOrganizationID(ctx, obj.ParentID)
+		if err != nil {
+			panic(fmt.Errorf("cannot count continual improvement registries: %w", err))
+		}
+		return count, nil
+	}
+
+	panic(fmt.Errorf("unsupported resolver: %T", obj.Resolver))
+}
+
 // Framework is the resolver for the framework field.
 func (r *controlResolver) Framework(ctx context.Context, obj *types.Control) (*types.Framework, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -3051,6 +3118,72 @@ func (r *mutationResolver) DeleteComplianceRegistry(ctx context.Context, input t
 	}, nil
 }
 
+// CreateContinualImprovementRegistry is the resolver for the createContinualImprovementRegistry field.
+func (r *mutationResolver) CreateContinualImprovementRegistry(ctx context.Context, input types.CreateContinualImprovementRegistryInput) (*types.CreateContinualImprovementRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.OrganizationID.TenantID())
+
+	req := probo.CreateContinualImprovementRegistryRequest{
+		OrganizationID: input.OrganizationID,
+		ReferenceID:    input.ReferenceID,
+		Description:    input.Description,
+		AuditID:        input.AuditID,
+		Source:         input.Source,
+		OwnerID:        input.OwnerID,
+		TargetDate:     input.TargetDate,
+		Status:         &input.Status,
+		Priority:       &input.Priority,
+	}
+
+	registry, err := prb.ContinualImprovementRegistries.Create(ctx, &req)
+	if err != nil {
+		panic(fmt.Errorf("cannot create continual improvement registry: %w", err))
+	}
+
+	return &types.CreateContinualImprovementRegistryPayload{
+		ContinualImprovementRegistryEdge: types.NewContinualImprovementRegistryEdge(registry, coredata.ContinualImprovementRegistriesOrderFieldCreatedAt),
+	}, nil
+}
+
+// UpdateContinualImprovementRegistry is the resolver for the updateContinualImprovementRegistry field.
+func (r *mutationResolver) UpdateContinualImprovementRegistry(ctx context.Context, input types.UpdateContinualImprovementRegistryInput) (*types.UpdateContinualImprovementRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.ID.TenantID())
+
+	req := probo.UpdateContinualImprovementRegistryRequest{
+		ID:          input.ID,
+		ReferenceID: input.ReferenceID,
+		Description: &input.Description,
+		AuditID:     input.AuditID,
+		Source:      &input.Source,
+		OwnerID:     input.OwnerID,
+		TargetDate:  &input.TargetDate,
+		Status:      input.Status,
+		Priority:    input.Priority,
+	}
+
+	registry, err := prb.ContinualImprovementRegistries.Update(ctx, &req)
+	if err != nil {
+		panic(fmt.Errorf("cannot update continual improvement registry: %w", err))
+	}
+
+	return &types.UpdateContinualImprovementRegistryPayload{
+		ContinualImprovementRegistry: types.NewContinualImprovementRegistry(registry),
+	}, nil
+}
+
+// DeleteContinualImprovementRegistry is the resolver for the deleteContinualImprovementRegistry field.
+func (r *mutationResolver) DeleteContinualImprovementRegistry(ctx context.Context, input types.DeleteContinualImprovementRegistryInput) (*types.DeleteContinualImprovementRegistryPayload, error) {
+	prb := r.ProboService(ctx, input.ContinualImprovementRegistryID.TenantID())
+
+	err := prb.ContinualImprovementRegistries.Delete(ctx, input.ContinualImprovementRegistryID)
+	if err != nil {
+		panic(fmt.Errorf("cannot delete continual improvement registry: %w", err))
+	}
+
+	return &types.DeleteContinualImprovementRegistryPayload{
+		DeletedContinualImprovementRegistryID: input.ContinualImprovementRegistryID,
+	}, nil
+}
+
 // CreateSnapshot is the resolver for the createSnapshot field.
 func (r *mutationResolver) CreateSnapshot(ctx context.Context, input types.CreateSnapshotInput) (*types.CreateSnapshotPayload, error) {
 	prb := r.ProboService(ctx, input.OrganizationID.TenantID())
@@ -3562,6 +3695,32 @@ func (r *organizationResolver) ComplianceRegistries(ctx context.Context, obj *ty
 	return types.NewComplianceRegistryConnection(page, r, obj.ID), nil
 }
 
+// ContinualImprovementRegistries is the resolver for the continualImprovementRegistries field.
+func (r *organizationResolver) ContinualImprovementRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ContinualImprovementRegistriesOrderBy) (*types.ContinualImprovementRegistryConnection, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	pageOrderBy := page.OrderBy[coredata.ContinualImprovementRegistriesOrderField]{
+		Field:     coredata.ContinualImprovementRegistriesOrderFieldCreatedAt,
+		Direction: page.OrderDirectionDesc,
+	}
+
+	if orderBy != nil {
+		pageOrderBy = page.OrderBy[coredata.ContinualImprovementRegistriesOrderField]{
+			Field:     orderBy.Field,
+			Direction: orderBy.Direction,
+		}
+	}
+
+	cursor := types.NewCursor(first, after, last, before, pageOrderBy)
+
+	page, err := prb.ContinualImprovementRegistries.ListForOrganizationID(ctx, obj.ID, cursor)
+	if err != nil {
+		panic(fmt.Errorf("cannot list organization continual improvement registries: %w", err))
+	}
+
+	return types.NewContinualImprovementRegistryConnection(page, r, obj.ID), nil
+}
+
 // Snapshots is the resolver for the snapshots field.
 func (r *organizationResolver) Snapshots(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) (*types.SnapshotConnection, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -3748,6 +3907,12 @@ func (r *queryResolver) Node(ctx context.Context, id gid.GID) (types.Node, error
 			panic(fmt.Errorf("cannot get compliance registry: %w", err))
 		}
 		return types.NewComplianceRegistry(complianceRegistry), nil
+	case coredata.ContinualImprovementRegistryEntityType:
+		continualImprovementRegistry, err := prb.ContinualImprovementRegistries.Get(ctx, id)
+		if err != nil {
+			panic(fmt.Errorf("cannot get continual improvement registry: %w", err))
+		}
+		return types.NewContinualImprovementRegistry(continualImprovementRegistry), nil
 	case coredata.ReportEntityType:
 		report, err := prb.Reports.Get(ctx, id)
 		if err != nil {
@@ -4568,6 +4733,16 @@ func (r *Resolver) ComplianceRegistryConnection() schema.ComplianceRegistryConne
 	return &complianceRegistryConnectionResolver{r}
 }
 
+// ContinualImprovementRegistry returns schema.ContinualImprovementRegistryResolver implementation.
+func (r *Resolver) ContinualImprovementRegistry() schema.ContinualImprovementRegistryResolver {
+	return &continualImprovementRegistryResolver{r}
+}
+
+// ContinualImprovementRegistryConnection returns schema.ContinualImprovementRegistryConnectionResolver implementation.
+func (r *Resolver) ContinualImprovementRegistryConnection() schema.ContinualImprovementRegistryConnectionResolver {
+	return &continualImprovementRegistryConnectionResolver{r}
+}
+
 // Control returns schema.ControlResolver implementation.
 func (r *Resolver) Control() schema.ControlResolver { return &controlResolver{r} }
 
@@ -4722,6 +4897,8 @@ type auditResolver struct{ *Resolver }
 type auditConnectionResolver struct{ *Resolver }
 type complianceRegistryResolver struct{ *Resolver }
 type complianceRegistryConnectionResolver struct{ *Resolver }
+type continualImprovementRegistryResolver struct{ *Resolver }
+type continualImprovementRegistryConnectionResolver struct{ *Resolver }
 type controlResolver struct{ *Resolver }
 type controlConnectionResolver struct{ *Resolver }
 type datumResolver struct{ *Resolver }
