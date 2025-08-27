@@ -42,7 +42,7 @@ const snapshotCreateMutation = graphql`
 const snapshotSchema = z.object({
   name: z.string().min(2, { message: "Name is required" }),
   description: z.string().optional(),
-  type: z.enum(["RISKS", "VENDORS", "ASSETS", "DATA", "NON_CONFORMITY_REGISTRIES", "COMPLIANCE_REGISTRIES"]),
+  type: z.enum(["DATA"]),
 });
 
 type Props = {
@@ -64,7 +64,7 @@ export default function SnapshotFormDialog(props: Props) {
       defaultValues: {
         name: "",
         description: "",
-        type: "RISKS",
+        type: "DATA",
       },
     });
 

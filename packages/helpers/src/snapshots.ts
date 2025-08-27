@@ -1,12 +1,7 @@
 type Translator = (s: string) => string;
 
 export const snapshotTypes = [
-  "RISKS",
-  "VENDORS",
-  "ASSETS",
   "DATA",
-  "NON_CONFORMITY_REGISTRIES",
-  "COMPLIANCE_REGISTRIES"
 ] as const;
 
 export function getSnapshotTypeLabel(__: Translator, type: string | null | undefined) {
