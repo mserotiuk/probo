@@ -1,0 +1,472 @@
+{
+  "id": "IEC 62443-4-2",
+  "name": "IEC 62443-4-2 | Industrial Automation and Control Systems Security",
+  "description": "Test description framework",
+  "controls": [
+    {
+      "id": "LCR-01-01",
+      "name": "Software Development - Binary protection during development, release and storage from unauthorized modification",
+      "description": "Test description control"
+    },
+    {
+      "id": "LCR-01-02",
+      "name": "Software Development - Binary protection during development, release and storage from unauthorized access"
+    },
+    {
+      "id": "LCR-02-01",
+      "name": "Software Signing - Software signature for authenticity and integrity verification"
+    },
+    {
+      "id": "LCR-02-02",
+      "name": "Software Signing - Cryptographically verified and established signing methods"
+    },
+    {
+      "id": "LCR-02-03",
+      "name": "Software Signing - Private key protection against unauthorized access and modification"
+    },
+    {
+      "id": "LCR-02-04",
+      "name": "Software Signing - Public key protection against unauthorized modification"
+    },
+    {
+      "id": "LCR-02-05",
+      "name": "Software Signing - Secure public key distribution"
+    },
+    {
+      "id": "LCR-03-01",
+      "name": "System Manufacturing - Secure installation of initial authenticator content and keys"
+    },
+    {
+      "id": "LCR-03-02",
+      "name": "System Manufacturing - Secure software installation to ensure integrity"
+    },
+    {
+      "id": "LCR-03-03",
+      "name": "System Manufacturing - Secure software installation to ensure confidentiality"
+    },
+    {
+      "id": "LCR-04-01",
+      "name": "Software Installation/Upgrade - Protection of update/upgrade packages against unauthorized access"
+    },
+    {
+      "id": "LCR-04-02",
+      "name": "Software Installation/Upgrade - Protection of update/upgrade packages against unauthorized modifications"
+    },
+    {
+      "id": "LCR-06-01",
+      "name": "System Maintenance - Authorized access to maintenance and diagnostics"
+    },
+    {
+      "id": "LCR-06-02",
+      "name": "System Maintenance - Identification and authentication via DeLaval+ for maintenance"
+    },
+    {
+      "id": "LCR-09-01",
+      "name": "Decommissioning - Application software deletion before decommissioning"
+    },
+    {
+      "id": "LCR-09-02",
+      "name": "Decommissioning - Private key deletion before decommissioning"
+    },
+    {
+      "id": "CSR-01-01",
+      "name": "FR1 SL1 - Initial authenticators installation during manufacturing"
+    },
+    {
+      "id": "CSR-01-02",
+      "name": "FR1 SL1 - Initial authenticators replacement during provisioning"
+    },
+    {
+      "id": "CSR-01-03",
+      "name": "FR1 SL1 - Authenticators protection against unauthorized disclosure"
+    },
+    {
+      "id": "CSR-01-04",
+      "name": "FR1 SL1 - Authenticators protection against unauthorized modification"
+    },
+    {
+      "id": "CSR-01-05",
+      "name": "FR1 SL1 - Authenticator feedback obscuring during authentication"
+    },
+    {
+      "id": "CSR-01-06",
+      "name": "FR1 SL1 - Configurable limit enforcement for consecutive invalid access attempts"
+    },
+    {
+      "id": "CSR-01-07",
+      "name": "FR1 SL2 - Component identification and authentication capability"
+    },
+    {
+      "id": "CSR-01-08",
+      "name": "FR1 SL2 - PKI operation according to best practices"
+    },
+    {
+      "id": "CSR-01-09",
+      "name": "FR1 SL2 - Certificate signature validation"
+    },
+    {
+      "id": "CSR-01-10",
+      "name": "FR1 SL2 - Certificate chain validation"
+    },
+    {
+      "id": "CSR-01-11",
+      "name": "FR1 SL2 - Certificate revocation status validation"
+    },
+    {
+      "id": "CSR-01-12",
+      "name": "FR1 SL2 - Internationally recognized algorithms and keys for public key authentication"
+    },
+    {
+      "id": "CSR-01-13",
+      "name": "FR1 SL3 - Unique identification and authentication capability to any component"
+    },
+    {
+      "id": "CSR-01-14",
+      "name": "FR1 SL3 - Hardware-based authenticator protection"
+    },
+    {
+      "id": "CSR-01-15",
+      "name": "FR1 SL3 - Hardware-based protection for long-lived private keys"
+    },
+    {
+      "id": "CSR-02-01",
+      "name": "FR2 SL1 - Authorization enforcement mechanism based on assigned responsibilities"
+    },
+    {
+      "id": "CSR-02-02",
+      "name": "FR2 SL1 - Session lock after configurable inactivity period"
+    },
+    {
+      "id": "CSR-02-03",
+      "name": "FR2 SL1 - Session lock maintenance until re-authentication"
+    },
+    {
+      "id": "CSR-02-04",
+      "name": "FR2 SL1 - Audit record generation for security-relevant categories"
+    },
+    {
+      "id": "CSR-02-05",
+      "name": "FR2 SL1 - Audit record storage capacity allocation"
+    },
+    {
+      "id": "CSR-02-06",
+      "name": "FR2 SL1 - Protection against audit storage capacity failure"
+    },
+    {
+      "id": "CSR-02-07",
+      "name": "FR2 SL1 - Protection against loss of services during audit processing failure"
+    },
+    {
+      "id": "CSR-02-08",
+      "name": "FR2 SL1 - Appropriate actions in response to audit processing failure"
+    },
+    {
+      "id": "CSR-02-09",
+      "name": "FR2 SL1 - Timestamp creation capability for audit records"
+    },
+    {
+      "id": "CSR-02-10",
+      "name": "FR2 SL1 - Human user action determination capability"
+    },
+    {
+      "id": "CSR-02-11",
+      "name": "FR2 SL2 - Authorization enforcement based on responsibilities and least privilege"
+    },
+    {
+      "id": "CSR-02-12",
+      "name": "FR2 SL2 - Synchronized timestamp creation for audit records"
+    },
+    {
+      "id": "CSR-02-13",
+      "name": "FR2 SL2 - Protection against unauthorized use of physical diagnostic interfaces"
+    },
+    {
+      "id": "CSR-02-14",
+      "name": "FR2 SL3 - Warning when audit storage reaches configurable threshold"
+    },
+    {
+      "id": "CSR-03-01",
+      "name": "FR3 SL1 - Protection of transmitted information integrity"
+    },
+    {
+      "id": "CSR-03-02",
+      "name": "FR3 SL1 - Verification of received information integrity"
+    },
+    {
+      "id": "CSR-03-03",
+      "name": "FR3 SL1 - Support for security functions verification"
+    },
+    {
+      "id": "CSR-03-04",
+      "name": "FR3 SL1 - Integrity checks on software, configuration and information"
+    },
+    {
+      "id": "CSR-03-05",
+      "name": "FR3 SL1 - Error condition handling without providing exploitable information"
+    },
+    {
+      "id": "CSR-03-06",
+      "name": "FR3 SL1 - Protection from malicious code"
+    },
+    {
+      "id": "CSR-03-07",
+      "name": "FR3 SL1 - Software, firmware and configuration integrity verification before execution"
+    },
+    {
+      "id": "CSR-03-08",
+      "name": "FR3 SL1 - Protection of integrity check keys from unauthorized modifications"
+    },
+    {
+      "id": "CSR-03-09",
+      "name": "FR3 SL1 - Support for component updates and upgrades"
+    },
+    {
+      "id": "CSR-03-10",
+      "name": "FR3 SL2 - Verification of received information authenticity during communication"
+    },
+    {
+      "id": "CSR-03-11",
+      "name": "FR3 SL2 - Authenticity check capability for receiving devices"
+    },
+    {
+      "id": "CSR-03-12",
+      "name": "FR3 SL2 - Authenticity checks on software, configuration and information"
+    },
+    {
+      "id": "CSR-03-13",
+      "name": "FR3 SL2 - Unique session identifier generation for each session"
+    },
+    {
+      "id": "CSR-03-14",
+      "name": "FR3 SL2 - Session identifier generation with accepted randomness sources"
+    },
+    {
+      "id": "CSR-03-15",
+      "name": "FR3 SL2 - Session identifier invalidation upon logout or termination"
+    },
+    {
+      "id": "CSR-03-16",
+      "name": "FR3 SL2 - Protection of audit information and logs from unauthorized access"
+    },
+    {
+      "id": "CSR-03-17",
+      "name": "FR3 SL2 - Software update/upgrade authenticity and integrity validation"
+    },
+    {
+      "id": "CSR-03-18",
+      "name": "FR3 SL2 - Product supplier roots of trust provisioning and protection"
+    },
+    {
+      "id": "CSR-03-19",
+      "name": "FR3 SL2 - Roots of trust verification for boot process components"
+    },
+    {
+      "id": "CSR-03-20",
+      "name": "FR3 SL3 - Automatic notification upon unauthorized change attempts"
+    },
+    {
+      "id": "CSR-03-21",
+      "name": "FR3 SL3 - Unauthorized physical access attempt detection mechanism"
+    },
+    {
+      "id": "CSR-03-22",
+      "name": "FR3 SL3 - Tampering notification logging in audit system"
+    },
+    {
+      "id": "CSR-04-01",
+      "name": "FR4 SL1 - Protection of information at rest confidentiality with explicit read authorization"
+    },
+    {
+      "id": "CSR-04-02",
+      "name": "FR4 SL1 - Protection of confidential information in transit"
+    },
+    {
+      "id": "CSR-04-03",
+      "name": "FR4 SL1 - Cryptographic security mechanisms according to international practices"
+    },
+    {
+      "id": "CSR-04-04",
+      "name": "FR4 SL2 - Reference to decommissioning requirements LCR-09-01 and LCR-09-02"
+    },
+    {
+      "id": "CSR-04-05",
+      "name": "FR4 SL3 - Protection against unauthorized information transfer via volatile shared memory"
+    },
+    {
+      "id": "CSR-04-06",
+      "name": "FR4 SL3 - Verification of information erasure occurrence"
+    },
+    {
+      "id": "CSR-05-01",
+      "name": "FR5 SL1 - Support for segmented network architecture"
+    },
+    {
+      "id": "CSR-05-02",
+      "name": "FR5 SL1 - Communication monitoring and control at zone boundaries"
+    },
+    {
+      "id": "CSR-05-03",
+      "name": "FR5 SL2 - Network traffic denial by default, allow by exception capability"
+    },
+    {
+      "id": "CSR-05-04",
+      "name": "FR5 SL3 - Protection against communication through control system boundary (island mode)"
+    },
+    {
+      "id": "CSR-05-05",
+      "name": "FR5 SL3 - Protection during boundary protection mechanism operational failure (fail close)"
+    },
+    {
+      "id": "CSR-06-01",
+      "name": "FR6 SL1 - Read-only audit log access for authorized humans and tools"
+    },
+    {
+      "id": "CSR-06-02",
+      "name": "FR6 SL2 - Continuous monitoring capability for security breach detection"
+    },
+    {
+      "id": "CSR-06-03",
+      "name": "FR6 SL3 - Programmatic audit record access via Grafana"
+    },
+    {
+      "id": "CR-07-01",
+      "name": "FR7 SL1 - Essential function maintenance during degraded mode from DoS events"
+    },
+    {
+      "id": "CR-07-02",
+      "name": "FR7 SL1 - Resource usage limitation by security functions to protect against exhaustion"
+    },
+    {
+      "id": "CR-07-03",
+      "name": "FR7 SL1 - System-level backup operations without affecting normal operations"
+    },
+    {
+      "id": "CR-07-04",
+      "name": "FR7 SL1 - Recovery and reconstitution capability to known secure state"
+    },
+    {
+      "id": "CR-07-05",
+      "name": "FR7 SL1 - Network settings configuration according to recommended guidelines"
+    },
+    {
+      "id": "CR-07-06",
+      "name": "FR7 SL1 - Security settings configuration according to recommended guidelines"
+    },
+    {
+      "id": "CR-07-07",
+      "name": "FR7 SL1 - Interface to deployed network and security configuration settings"
+    },
+    {
+      "id": "CR-07-08",
+      "name": "FR7 SL1 - Restriction of unused functions, protocols and services"
+    },
+    {
+      "id": "CR-07-09",
+      "name": "FR7 SL1 - Restriction of unnecessary ports usage"
+    },
+    {
+      "id": "CR-07-10",
+      "name": "FR7 SL2 - Mitigation capability for information/message flooding DoS events"
+    },
+    {
+      "id": "CR-07-11",
+      "name": "FR7 SL2 - Backed up information integrity validation prior to restore"
+    },
+    {
+      "id": "CR-07-12",
+      "name": "FR7 SL2 - Backup data inclusion of integrity check enablement data"
+    },
+    {
+      "id": "CR-07-13",
+      "name": "FR7 SL2 - Product code, ID, software version and capability transmission for system inventory"
+    },
+    {
+      "id": "CR-07-14",
+      "name": "FR7 SL3 - Machine-readable security settings report generation capability"
+    },
+    {
+      "id": "CSR-SHR-01",
+      "name": "Shared SL1 - Human user identification and authentication via DeLaval+"
+    },
+    {
+      "id": "CSR-SHR-02",
+      "name": "Shared SL1 - Account management by DeLaval+"
+    },
+    {
+      "id": "CSR-SHR-03",
+      "name": "Shared SL1 - Authenticator management for human users by DeLaval+"
+    },
+    {
+      "id": "CSR-SHR-04",
+      "name": "Shared SL1 - Password strength enforcement according to international guidelines"
+    },
+    {
+      "id": "CSR-SHR-05",
+      "name": "Shared SL1 - Authenticator information feedback obscuring during authentication"
+    },
+    {
+      "id": "CSR-SHR-06",
+      "name": "Shared SL1 - Configurable consecutive invalid access attempt limit enforcement"
+    },
+    {
+      "id": "CSR-SHR-07",
+      "name": "Shared SL1 - Access denial for specified period or until administrator unlock"
+    },
+    {
+      "id": "CSR-SHR-08",
+      "name": "Shared SL1 - Session lock after configurable inactivity period for DeLaval cloud"
+    },
+    {
+      "id": "CSR-SHR-09",
+      "name": "Shared SL1 - Session lock maintenance until re-authentication"
+    },
+    {
+      "id": "CSR-SHR-10",
+      "name": "Shared SL1 - Transmitted information integrity assurance"
+    },
+    {
+      "id": "CSR-SHR-11",
+      "name": "Shared SL2 - Unique human user identification and authentication via DeLaval+"
+    },
+    {
+      "id": "CSR-SHR-12",
+      "name": "Shared SL2 - Authorized role provision for permissions to roles mapping"
+    },
+    {
+      "id": "CSR-SHR-13",
+      "name": "Shared SL2 - System-wide time source for device synchronization"
+    },
+    {
+      "id": "CSR-SHR-14",
+      "name": "Shared SL3 - Multifactor authentication for human users"
+    },
+    {
+      "id": "CSR-SHR-15",
+      "name": "Shared SL3 - Authenticator reuse protection for configurable generations"
+    },
+    {
+      "id": "CSR-SHR-16",
+      "name": "Shared SL3 - Minimum and maximum lifetime restriction enforcement for human users"
+    },
+    {
+      "id": "CSR-SHR-17",
+      "name": "Shared SL3 - Industry practices conformance for requirements CSR-SHR-12 and CSR-SHR-13"
+    },
+    {
+      "id": "CSR-SHR-18",
+      "name": "Shared SL3 - Password change prompt capability prior to expiration"
+    },
+    {
+      "id": "CSR-SHR-19",
+      "name": "Shared SL3 - Automatic notification of unauthorized changes to DeLaval cloud"
+    },
+    {
+      "id": "CSR-SHR-20",
+      "name": "Shared SL3 - Log fetching capability via Grafana"
+    },
+    {
+      "id": "CSR-SHR-21",
+      "name": "Shared SL3 - Automatic notification of unauthorized physical access attempts to DeLaval cloud"
+    }
+  ]
+}
