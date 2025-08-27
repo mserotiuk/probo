@@ -2,28 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.52.0]
+## [0.52.0] - 2025-08-27
 
 ### Added
 - Add data snapshot
 
-## [0.51.1]
+## [0.51.1] - 2025-08-23
 
 ### Fixed
 - Fix query loops in public trust center
 - Fix button display when disconected in public trust center
 
-## [0.51.0]
+## [0.51.0] - 2025-08-22
 
 ### Added
 - Add trust center access requests
 
-## [0.50.1]
+## [0.50.1] - 2025-08-21
 
 ### Fixed
 - Fix authentification token error
 
-## [0.50.0]
+## [0.50.0] - 2025-08-21
 
 ### Added
 - Add compliance registries
@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 ### Chore
 - Replace mailhog
 
-## [0.49.0]
+## [0.49.0] - 2025-08-20
 
 ### Added
 - Add nonconformity registries
@@ -40,13 +40,13 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fix trust center dark mode
 
-## [0.48.1]
+## [0.48.1] - 2025-08-14
 
 ### Fixed
 
 - Fix display of download buttons in the public trust center
 
-## [0.48.0]
+## [0.48.0] - 2025-08-14
 
 ### Added
 - Add baa to vendors
@@ -55,7 +55,7 @@ All notable changes to this project will be documented in this file.
 - Add name to audits
 - Add audits to controls
 
-## [0.47.0]
+## [0.47.0] - 2025-08-13
 
 ### Added
 - Add document draft deletion
