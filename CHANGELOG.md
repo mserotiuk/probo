@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.52.0]
+
+### Added
+- Add data snapshot
+
 ## [0.51.1]
 
 ### Fixed
