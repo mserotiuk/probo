@@ -1558,8 +1558,7 @@ type Audit implements Node {
   framework: Framework! @goField(forceResolver: true)
   validFrom: Datetime
   validUntil: Datetime
-  report: Report @goField(forceResolver: true)
-  reportUrl: String @goField(forceResolver: true)
+  reports: [Report!]! @goField(forceResolver: true)
   state: AuditState!
 
   controls(
@@ -2762,6 +2761,7 @@ input UploadAuditReportInput {
 
 input DeleteAuditReportInput {
   auditId: ID!
+  reportId: ID!
 }
 
 # Nonconformity Registry input types
