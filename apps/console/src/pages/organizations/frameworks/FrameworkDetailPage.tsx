@@ -181,7 +181,6 @@ export default function FrameworkDetailPage(props: Props) {
             <ControlItem
               key={control.id}
               id={control.sectionTitle}
-              description={control.name}
               excluded={control.status === "EXCLUDED"}
               to={`/organizations/${organizationId}/frameworks/${framework.id}/controls/${control.id}`}
               active={selectedControl?.id === control.id}
