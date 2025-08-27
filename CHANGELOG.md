@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- Probo instance allow crawling bot to index.
+
 ## [0.52.0] - 2025-08-27
 
 ### Added
