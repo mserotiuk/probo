@@ -237,3 +237,60 @@ WHERE
 
 	return nil
 }
+
+func (s *Snapshots) LoadByControlID(
+	ctx context.Context,
+	conn pg.Conn,
+	scope Scoper,
+	controlID gid.GID,
+	cursor *page.Cursor[SnapshotOrderField],
+) error {
+	q := `
+WITH snapshots_by_control AS (
+	SELECT
+		s.id,
+		s.tenant_id,
+		s.organization_id,
+		s.name,
+		s.description,
+		s.type,
+		s.created_at
+	FROM
+		snapshots s
+	INNER JOIN
+		controls_snapshots cs ON s.id = cs.snapshot_id
+	WHERE
+		cs.control_id = @control_id
+)
+SELECT
+	id,
+	organization_id,
+	name,
+	description,
+	type,
+	created_at
+FROM
+	snapshots_by_control
+WHERE %s
+	AND %s
+`
+	q = fmt.Sprintf(q, scope.SQLFragment(), cursor.SQLFragment())
+
+	args := pgx.StrictNamedArgs{"control_id": controlID}
+	maps.Copy(args, scope.SQLArguments())
+	maps.Copy(args, cursor.SQLArguments())
+
+	rows, err := conn.Query(ctx, q, args)
+	if err != nil {
+		return fmt.Errorf("cannot query snapshots: %w", err)
+	}
+
+	snapshots, err := pgx.CollectRows(rows, pgx.RowToAddrOfStructByName[Snapshot])
+	if err != nil {
+		return fmt.Errorf("cannot collect snapshots: %w", err)
+	}
+
+	*s = snapshots
+
+	return nil
+}

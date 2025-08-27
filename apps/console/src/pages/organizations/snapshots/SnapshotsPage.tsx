@@ -5,9 +5,10 @@ import {
   type PreloadedQuery,
 } from "react-relay";
 import { useTranslate } from "@probo/i18n";
-import { getSnapshotTypeLabel } from "@probo/helpers";
+import { getSnapshotTypeLabel, getSnapshotTypeUrlPath } from "@probo/helpers";
 import {
   ActionDropdown,
+  Badge,
   Button,
   DropdownItem,
   IconPlusLarge,
@@ -131,28 +132,15 @@ function SnapshotRow(props: SnapshotRowProps) {
   const { __, dateFormat } = useTranslate();
   const deleteSnapshot = useDeleteSnapshot(props.snapshot, props.connectionId);
 
-  const getSnapshotUrl = (snapshot: SnapshotRowProps["snapshot"]) => {
-    const baseUrl = `/organizations/${props.organizationId}/snapshots/${snapshot.id}`;
-
-    switch (snapshot.type) {
-      case "DATA":
-        return `${baseUrl}/data`;
-      case "VENDORS":
-        return `${baseUrl}/vendors`;
-      case "RISKS":
-        return `${baseUrl}/risks`;
-      case "ASSETS":
-        return `${baseUrl}/assets`;
-      default:
-        return baseUrl;
-    }
-  };
+  const typePath = getSnapshotTypeUrlPath(props.snapshot.type);
 
   return (
-    <Tr to={getSnapshotUrl(props.snapshot)}>
+    <Tr to={`/organizations/${props.organizationId}/snapshots/${props.snapshot.id}${typePath}`}>
       <Td className="font-medium">{props.snapshot.name}</Td>
-      <Td className="text-txt-secondary">
-        {getSnapshotTypeLabel(__, props.snapshot.type)}
+      <Td>
+        <Badge variant="neutral">
+          {getSnapshotTypeLabel(__, props.snapshot.type)}
+        </Badge>
       </Td>
       <Td className="text-txt-secondary">
         {props.snapshot.description || __("No description")}

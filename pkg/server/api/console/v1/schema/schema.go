@@ -229,6 +229,7 @@ type ComplexityRoot struct {
 		Measures               func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.MeasureOrderBy, filter *types.MeasureFilter) int
 		Name                   func(childComplexity int) int
 		SectionTitle           func(childComplexity int) int
+		Snapshots              func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) int
 		Status                 func(childComplexity int) int
 		UpdatedAt              func(childComplexity int) int
 	}
@@ -273,6 +274,11 @@ type ComplexityRoot struct {
 
 	CreateControlPayload struct {
 		ControlEdge func(childComplexity int) int
+	}
+
+	CreateControlSnapshotMappingPayload struct {
+		ControlEdge  func(childComplexity int) int
+		SnapshotEdge func(childComplexity int) int
 	}
 
 	CreateDatumPayload struct {
@@ -409,6 +415,11 @@ type ComplexityRoot struct {
 
 	DeleteControlPayload struct {
 		DeletedControlID func(childComplexity int) int
+	}
+
+	DeleteControlSnapshotMappingPayload struct {
+		DeletedControlID  func(childComplexity int) int
+		DeletedSnapshotID func(childComplexity int) int
 	}
 
 	DeleteDatumPayload struct {
@@ -686,6 +697,7 @@ type ComplexityRoot struct {
 		CreateControlAuditMapping              func(childComplexity int, input types.CreateControlAuditMappingInput) int
 		CreateControlDocumentMapping           func(childComplexity int, input types.CreateControlDocumentMappingInput) int
 		CreateControlMeasureMapping            func(childComplexity int, input types.CreateControlMeasureMappingInput) int
+		CreateControlSnapshotMapping           func(childComplexity int, input types.CreateControlSnapshotMappingInput) int
 		CreateDatum                            func(childComplexity int, input types.CreateDatumInput) int
 		CreateDocument                         func(childComplexity int, input types.CreateDocumentInput) int
 		CreateDraftDocumentVersion             func(childComplexity int, input types.CreateDraftDocumentVersionInput) int
@@ -712,6 +724,7 @@ type ComplexityRoot struct {
 		DeleteControlAuditMapping              func(childComplexity int, input types.DeleteControlAuditMappingInput) int
 		DeleteControlDocumentMapping           func(childComplexity int, input types.DeleteControlDocumentMappingInput) int
 		DeleteControlMeasureMapping            func(childComplexity int, input types.DeleteControlMeasureMappingInput) int
+		DeleteControlSnapshotMapping           func(childComplexity int, input types.DeleteControlSnapshotMappingInput) int
 		DeleteDatum                            func(childComplexity int, input types.DeleteDatumInput) int
 		DeleteDocument                         func(childComplexity int, input types.DeleteDocumentInput) int
 		DeleteDraftDocumentVersion             func(childComplexity int, input types.DeleteDraftDocumentVersionInput) int
@@ -946,6 +959,7 @@ type ComplexityRoot struct {
 	}
 
 	Snapshot struct {
+		Controls     func(childComplexity int, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ControlOrderBy, filter *types.ControlFilter) int
 		CreatedAt    func(childComplexity int) int
 		Description  func(childComplexity int) int
 		ID           func(childComplexity int) int
@@ -1358,6 +1372,7 @@ type ControlResolver interface {
 	Measures(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.MeasureOrderBy, filter *types.MeasureFilter) (*types.MeasureConnection, error)
 	Documents(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.DocumentOrderBy, filter *types.DocumentFilter) (*types.DocumentConnection, error)
 	Audits(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.AuditOrderBy) (*types.AuditConnection, error)
+	Snapshots(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) (*types.SnapshotConnection, error)
 }
 type ControlConnectionResolver interface {
 	TotalCount(ctx context.Context, obj *types.ControlConnection) (int, error)
@@ -1459,6 +1474,8 @@ type MutationResolver interface {
 	DeleteControlDocumentMapping(ctx context.Context, input types.DeleteControlDocumentMappingInput) (*types.DeleteControlDocumentMappingPayload, error)
 	CreateControlAuditMapping(ctx context.Context, input types.CreateControlAuditMappingInput) (*types.CreateControlAuditMappingPayload, error)
 	DeleteControlAuditMapping(ctx context.Context, input types.DeleteControlAuditMappingInput) (*types.DeleteControlAuditMappingPayload, error)
+	CreateControlSnapshotMapping(ctx context.Context, input types.CreateControlSnapshotMappingInput) (*types.CreateControlSnapshotMappingPayload, error)
+	DeleteControlSnapshotMapping(ctx context.Context, input types.DeleteControlSnapshotMappingInput) (*types.DeleteControlSnapshotMappingPayload, error)
 	CreateTask(ctx context.Context, input types.CreateTaskInput) (*types.CreateTaskPayload, error)
 	UpdateTask(ctx context.Context, input types.UpdateTaskInput) (*types.UpdateTaskPayload, error)
 	DeleteTask(ctx context.Context, input types.DeleteTaskInput) (*types.DeleteTaskPayload, error)
@@ -1573,6 +1590,8 @@ type RiskConnectionResolver interface {
 }
 type SnapshotResolver interface {
 	Organization(ctx context.Context, obj *types.Snapshot) (*types.Organization, error)
+
+	Controls(ctx context.Context, obj *types.Snapshot, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ControlOrderBy, filter *types.ControlFilter) (*types.ControlConnection, error)
 }
 type SnapshotConnectionResolver interface {
 	TotalCount(ctx context.Context, obj *types.SnapshotConnection) (int, error)
@@ -2241,6 +2260,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Control.SectionTitle(childComplexity), true
 
+	case "Control.snapshots":
+		if e.complexity.Control.Snapshots == nil {
+			break
+		}
+
+		args, err := ec.field_Control_snapshots_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Control.Snapshots(childComplexity, args["first"].(*int), args["after"].(*page.CursorKey), args["last"].(*int), args["before"].(*page.CursorKey), args["orderBy"].(*types.SnapshotOrderBy)), true
+
 	case "Control.status":
 		if e.complexity.Control.Status == nil {
 			break
@@ -2359,6 +2390,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.CreateControlPayload.ControlEdge(childComplexity), true
+
+	case "CreateControlSnapshotMappingPayload.controlEdge":
+		if e.complexity.CreateControlSnapshotMappingPayload.ControlEdge == nil {
+			break
+		}
+
+		return e.complexity.CreateControlSnapshotMappingPayload.ControlEdge(childComplexity), true
+
+	case "CreateControlSnapshotMappingPayload.snapshotEdge":
+		if e.complexity.CreateControlSnapshotMappingPayload.SnapshotEdge == nil {
+			break
+		}
+
+		return e.complexity.CreateControlSnapshotMappingPayload.SnapshotEdge(childComplexity), true
 
 	case "CreateDatumPayload.datumEdge":
 		if e.complexity.CreateDatumPayload.DatumEdge == nil {
@@ -2686,6 +2731,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.DeleteControlPayload.DeletedControlID(childComplexity), true
+
+	case "DeleteControlSnapshotMappingPayload.deletedControlId":
+		if e.complexity.DeleteControlSnapshotMappingPayload.DeletedControlID == nil {
+			break
+		}
+
+		return e.complexity.DeleteControlSnapshotMappingPayload.DeletedControlID(childComplexity), true
+
+	case "DeleteControlSnapshotMappingPayload.deletedSnapshotId":
+		if e.complexity.DeleteControlSnapshotMappingPayload.DeletedSnapshotID == nil {
+			break
+		}
+
+		return e.complexity.DeleteControlSnapshotMappingPayload.DeletedSnapshotID(childComplexity), true
 
 	case "DeleteDatumPayload.deletedDatumId":
 		if e.complexity.DeleteDatumPayload.DeletedDatumID == nil {
@@ -3744,6 +3803,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateControlMeasureMapping(childComplexity, args["input"].(types.CreateControlMeasureMappingInput)), true
 
+	case "Mutation.createControlSnapshotMapping":
+		if e.complexity.Mutation.CreateControlSnapshotMapping == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createControlSnapshotMapping_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateControlSnapshotMapping(childComplexity, args["input"].(types.CreateControlSnapshotMappingInput)), true
+
 	case "Mutation.createDatum":
 		if e.complexity.Mutation.CreateDatum == nil {
 			break
@@ -4055,6 +4126,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteControlMeasureMapping(childComplexity, args["input"].(types.DeleteControlMeasureMappingInput)), true
+
+	case "Mutation.deleteControlSnapshotMapping":
+		if e.complexity.Mutation.DeleteControlSnapshotMapping == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteControlSnapshotMapping_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteControlSnapshotMapping(childComplexity, args["input"].(types.DeleteControlSnapshotMappingInput)), true
 
 	case "Mutation.deleteDatum":
 		if e.complexity.Mutation.DeleteDatum == nil {
@@ -5642,6 +5725,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Session.ID(childComplexity), true
 
+	case "Snapshot.controls":
+		if e.complexity.Snapshot.Controls == nil {
+			break
+		}
+
+		args, err := ec.field_Snapshot_controls_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Snapshot.Controls(childComplexity, args["first"].(*int), args["after"].(*page.CursorKey), args["last"].(*int), args["before"].(*page.CursorKey), args["orderBy"].(*types.ControlOrderBy), args["filter"].(*types.ControlFilter)), true
+
 	case "Snapshot.createdAt":
 		if e.complexity.Snapshot.CreatedAt == nil {
 			break
@@ -7046,6 +7141,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateControlDocumentMappingInput,
 		ec.unmarshalInputCreateControlInput,
 		ec.unmarshalInputCreateControlMeasureMappingInput,
+		ec.unmarshalInputCreateControlSnapshotMappingInput,
 		ec.unmarshalInputCreateDatumInput,
 		ec.unmarshalInputCreateDocumentInput,
 		ec.unmarshalInputCreateDraftDocumentVersionInput,
@@ -7075,6 +7171,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputDeleteControlDocumentMappingInput,
 		ec.unmarshalInputDeleteControlInput,
 		ec.unmarshalInputDeleteControlMeasureMappingInput,
+		ec.unmarshalInputDeleteControlSnapshotMappingInput,
 		ec.unmarshalInputDeleteDatumInput,
 		ec.unmarshalInputDeleteDocumentInput,
 		ec.unmarshalInputDeleteDraftDocumentVersionInput,
@@ -8561,6 +8658,14 @@ type Control implements Node {
     orderBy: AuditOrder
   ): AuditConnection! @goField(forceResolver: true)
 
+  snapshots(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: SnapshotOrder
+  ): SnapshotConnection! @goField(forceResolver: true)
+
   createdAt: Datetime!
   updatedAt: Datetime!
 }
@@ -8798,6 +8903,16 @@ type Snapshot implements Node {
   name: String!
   description: String
   type: SnapshotsType!
+
+  controls(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: ControlOrder
+    filter: ControlFilter
+  ): ControlConnection! @goField(forceResolver: true)
+
   createdAt: Datetime!
 }
 
@@ -9243,6 +9358,12 @@ type Mutation {
   deleteControlAuditMapping(
     input: DeleteControlAuditMappingInput!
   ): DeleteControlAuditMappingPayload!
+  createControlSnapshotMapping(
+    input: CreateControlSnapshotMappingInput!
+  ): CreateControlSnapshotMappingPayload!
+  deleteControlSnapshotMapping(
+    input: DeleteControlSnapshotMappingInput!
+  ): DeleteControlSnapshotMappingPayload!
 
   # Task mutations
   createTask(input: CreateTaskInput!): CreateTaskPayload!
@@ -9655,6 +9776,16 @@ input CreateControlAuditMappingInput {
 input DeleteControlAuditMappingInput {
   controlId: ID!
   auditId: ID!
+}
+
+input CreateControlSnapshotMappingInput {
+  controlId: ID!
+  snapshotId: ID!
+}
+
+input DeleteControlSnapshotMappingInput {
+  controlId: ID!
+  snapshotId: ID!
 }
 
 input CreateRiskInput {
@@ -10124,6 +10255,16 @@ type CreateControlAuditMappingPayload {
 type DeleteControlAuditMappingPayload {
   deletedControlId: ID!
   deletedAuditId: ID!
+}
+
+type CreateControlSnapshotMappingPayload {
+  controlEdge: ControlEdge!
+  snapshotEdge: SnapshotEdge!
+}
+
+type DeleteControlSnapshotMappingPayload {
+  deletedControlId: ID!
+  deletedSnapshotId: ID!
 }
 
 type CreateRiskPayload {
@@ -11208,6 +11349,101 @@ func (ec *executionContext) field_Control_measures_argsFilter(
 	}
 
 	var zeroVal *types.MeasureFilter
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Control_snapshots_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Control_snapshots_argsFirst(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := ec.field_Control_snapshots_argsAfter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	arg2, err := ec.field_Control_snapshots_argsLast(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg2
+	arg3, err := ec.field_Control_snapshots_argsBefore(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg3
+	arg4, err := ec.field_Control_snapshots_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg4
+	return args, nil
+}
+func (ec *executionContext) field_Control_snapshots_argsFirst(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+	if tmp, ok := rawArgs["first"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Control_snapshots_argsAfter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+	if tmp, ok := rawArgs["after"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Control_snapshots_argsLast(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+	if tmp, ok := rawArgs["last"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Control_snapshots_argsBefore(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+	if tmp, ok := rawArgs["before"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Control_snapshots_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*types.SnapshotOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOSnapshotOrder2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐSnapshotOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *types.SnapshotOrderBy
 	return zeroVal, nil
 }
 
@@ -12432,6 +12668,29 @@ func (ec *executionContext) field_Mutation_createControlMeasureMapping_argsInput
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_createControlSnapshotMapping_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_createControlSnapshotMapping_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createControlSnapshotMapping_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (types.CreateControlSnapshotMappingInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreateControlSnapshotMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlSnapshotMappingInput(ctx, tmp)
+	}
+
+	var zeroVal types.CreateControlSnapshotMappingInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_createControl_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -13027,6 +13286,29 @@ func (ec *executionContext) field_Mutation_deleteControlMeasureMapping_argsInput
 	}
 
 	var zeroVal types.DeleteControlMeasureMappingInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteControlSnapshotMapping_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteControlSnapshotMapping_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteControlSnapshotMapping_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (types.DeleteControlSnapshotMappingInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteControlSnapshotMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlSnapshotMappingInput(ctx, tmp)
+	}
+
+	var zeroVal types.DeleteControlSnapshotMappingInput
 	return zeroVal, nil
 }
 
@@ -16561,6 +16843,119 @@ func (ec *executionContext) field_Risk_measures_argsFilter(
 	}
 
 	var zeroVal *types.MeasureFilter
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Snapshot_controls_argsFirst(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := ec.field_Snapshot_controls_argsAfter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	arg2, err := ec.field_Snapshot_controls_argsLast(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg2
+	arg3, err := ec.field_Snapshot_controls_argsBefore(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg3
+	arg4, err := ec.field_Snapshot_controls_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg4
+	arg5, err := ec.field_Snapshot_controls_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg5
+	return args, nil
+}
+func (ec *executionContext) field_Snapshot_controls_argsFirst(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+	if tmp, ok := rawArgs["first"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_argsAfter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+	if tmp, ok := rawArgs["after"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_argsLast(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+	if tmp, ok := rawArgs["last"]; ok {
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
+	}
+
+	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_argsBefore(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*page.CursorKey, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+	if tmp, ok := rawArgs["before"]; ok {
+		return ec.unmarshalOCursorKey2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋpageᚐCursorKey(ctx, tmp)
+	}
+
+	var zeroVal *page.CursorKey
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*types.ControlOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOControlOrder2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControlOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *types.ControlOrderBy
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Snapshot_controls_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*types.ControlFilter, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOControlFilter2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControlFilter(ctx, tmp)
+	}
+
+	var zeroVal *types.ControlFilter
 	return zeroVal, nil
 }
 
@@ -21470,6 +21865,69 @@ func (ec *executionContext) fieldContext_Control_audits(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Control_snapshots(ctx context.Context, field graphql.CollectedField, obj *types.Control) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Control_snapshots(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Control().Snapshots(rctx, obj, fc.Args["first"].(*int), fc.Args["after"].(*page.CursorKey), fc.Args["last"].(*int), fc.Args["before"].(*page.CursorKey), fc.Args["orderBy"].(*types.SnapshotOrderBy))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.SnapshotConnection)
+	fc.Result = res
+	return ec.marshalNSnapshotConnection2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐSnapshotConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Control_snapshots(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Control",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "totalCount":
+				return ec.fieldContext_SnapshotConnection_totalCount(ctx, field)
+			case "edges":
+				return ec.fieldContext_SnapshotConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Control_snapshots_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Control_createdAt(ctx context.Context, field graphql.CollectedField, obj *types.Control) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Control_createdAt(ctx, field)
 	if err != nil {
@@ -21809,6 +22267,8 @@ func (ec *executionContext) fieldContext_ControlEdge_node(_ context.Context, fie
 				return ec.fieldContext_Control_documents(ctx, field)
 			case "audits":
 				return ec.fieldContext_Control_audits(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Control_snapshots(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Control_createdAt(ctx, field)
 			case "updatedAt":
@@ -22315,6 +22775,106 @@ func (ec *executionContext) fieldContext_CreateControlPayload_controlEdge(_ cont
 				return ec.fieldContext_ControlEdge_node(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ControlEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateControlSnapshotMappingPayload_controlEdge(ctx context.Context, field graphql.CollectedField, obj *types.CreateControlSnapshotMappingPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateControlSnapshotMappingPayload_controlEdge(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ControlEdge, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ControlEdge)
+	fc.Result = res
+	return ec.marshalNControlEdge2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControlEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateControlSnapshotMappingPayload_controlEdge(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateControlSnapshotMappingPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_ControlEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_ControlEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ControlEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateControlSnapshotMappingPayload_snapshotEdge(ctx context.Context, field graphql.CollectedField, obj *types.CreateControlSnapshotMappingPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateControlSnapshotMappingPayload_snapshotEdge(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapshotEdge, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.SnapshotEdge)
+	fc.Result = res
+	return ec.marshalNSnapshotEdge2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐSnapshotEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateControlSnapshotMappingPayload_snapshotEdge(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateControlSnapshotMappingPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_SnapshotEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_SnapshotEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEdge", field.Name)
 		},
 	}
 	return fc, nil
@@ -24615,6 +25175,94 @@ func (ec *executionContext) _DeleteControlPayload_deletedControlId(ctx context.C
 func (ec *executionContext) fieldContext_DeleteControlPayload_deletedControlId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteControlPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteControlSnapshotMappingPayload_deletedControlId(ctx context.Context, field graphql.CollectedField, obj *types.DeleteControlSnapshotMappingPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeleteControlSnapshotMappingPayload_deletedControlId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedControlID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(gid.GID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeleteControlSnapshotMappingPayload_deletedControlId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteControlSnapshotMappingPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteControlSnapshotMappingPayload_deletedSnapshotId(ctx context.Context, field graphql.CollectedField, obj *types.DeleteControlSnapshotMappingPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeleteControlSnapshotMappingPayload_deletedSnapshotId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedSnapshotID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(gid.GID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeleteControlSnapshotMappingPayload_deletedSnapshotId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteControlSnapshotMappingPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -33092,6 +33740,128 @@ func (ec *executionContext) fieldContext_Mutation_deleteControlAuditMapping(ctx 
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteControlAuditMapping_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createControlSnapshotMapping(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createControlSnapshotMapping(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateControlSnapshotMapping(rctx, fc.Args["input"].(types.CreateControlSnapshotMappingInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.CreateControlSnapshotMappingPayload)
+	fc.Result = res
+	return ec.marshalNCreateControlSnapshotMappingPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlSnapshotMappingPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createControlSnapshotMapping(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "controlEdge":
+				return ec.fieldContext_CreateControlSnapshotMappingPayload_controlEdge(ctx, field)
+			case "snapshotEdge":
+				return ec.fieldContext_CreateControlSnapshotMappingPayload_snapshotEdge(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateControlSnapshotMappingPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createControlSnapshotMapping_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteControlSnapshotMapping(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteControlSnapshotMapping(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteControlSnapshotMapping(rctx, fc.Args["input"].(types.DeleteControlSnapshotMappingInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.DeleteControlSnapshotMappingPayload)
+	fc.Result = res
+	return ec.marshalNDeleteControlSnapshotMappingPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlSnapshotMappingPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteControlSnapshotMapping(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "deletedControlId":
+				return ec.fieldContext_DeleteControlSnapshotMappingPayload_deletedControlId(ctx, field)
+			case "deletedSnapshotId":
+				return ec.fieldContext_DeleteControlSnapshotMappingPayload_deletedSnapshotId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteControlSnapshotMappingPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteControlSnapshotMapping_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -42553,6 +43323,69 @@ func (ec *executionContext) fieldContext_Snapshot_type(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Snapshot_controls(ctx context.Context, field graphql.CollectedField, obj *types.Snapshot) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Snapshot_controls(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Snapshot().Controls(rctx, obj, fc.Args["first"].(*int), fc.Args["after"].(*page.CursorKey), fc.Args["last"].(*int), fc.Args["before"].(*page.CursorKey), fc.Args["orderBy"].(*types.ControlOrderBy), fc.Args["filter"].(*types.ControlFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*types.ControlConnection)
+	fc.Result = res
+	return ec.marshalNControlConnection2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐControlConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_controls(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "totalCount":
+				return ec.fieldContext_ControlConnection_totalCount(ctx, field)
+			case "edges":
+				return ec.fieldContext_ControlConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_ControlConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ControlConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Snapshot_controls_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Snapshot_createdAt(ctx context.Context, field graphql.CollectedField, obj *types.Snapshot) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Snapshot_createdAt(ctx, field)
 	if err != nil {
@@ -42838,6 +43671,8 @@ func (ec *executionContext) fieldContext_SnapshotEdge_node(_ context.Context, fi
 				return ec.fieldContext_Snapshot_description(ctx, field)
 			case "type":
 				return ec.fieldContext_Snapshot_type(ctx, field)
+			case "controls":
+				return ec.fieldContext_Snapshot_controls(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Snapshot_createdAt(ctx, field)
 			}
@@ -45130,6 +45965,8 @@ func (ec *executionContext) fieldContext_UpdateControlPayload_control(_ context.
 				return ec.fieldContext_Control_documents(ctx, field)
 			case "audits":
 				return ec.fieldContext_Control_audits(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Control_snapshots(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Control_createdAt(ctx, field)
 			case "updatedAt":
@@ -55242,6 +56079,40 @@ func (ec *executionContext) unmarshalInputCreateControlMeasureMappingInput(ctx c
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateControlSnapshotMappingInput(ctx context.Context, obj any) (types.CreateControlSnapshotMappingInput, error) {
+	var it types.CreateControlSnapshotMappingInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"controlId", "snapshotId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "controlId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("controlId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ControlID = data
+		case "snapshotId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateDatumInput(ctx context.Context, obj any) (types.CreateDatumInput, error) {
 	var it types.CreateDatumInput
 	asMap := map[string]any{}
@@ -56677,6 +57548,40 @@ func (ec *executionContext) unmarshalInputDeleteControlMeasureMappingInput(ctx c
 				return it, err
 			}
 			it.MeasureID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteControlSnapshotMappingInput(ctx context.Context, obj any) (types.DeleteControlSnapshotMappingInput, error) {
+	var it types.DeleteControlSnapshotMappingInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"controlId", "snapshotId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "controlId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("controlId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ControlID = data
+		case "snapshotId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotId"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgetproboᚋproboᚋpkgᚋgidᚐGID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotID = data
 		}
 	}
 
@@ -61966,6 +62871,42 @@ func (ec *executionContext) _Control(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshots":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Control_snapshots(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Control_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -62385,6 +63326,50 @@ func (ec *executionContext) _CreateControlPayload(ctx context.Context, sel ast.S
 			out.Values[i] = graphql.MarshalString("CreateControlPayload")
 		case "controlEdge":
 			out.Values[i] = ec._CreateControlPayload_controlEdge(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var createControlSnapshotMappingPayloadImplementors = []string{"CreateControlSnapshotMappingPayload"}
+
+func (ec *executionContext) _CreateControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, obj *types.CreateControlSnapshotMappingPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createControlSnapshotMappingPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateControlSnapshotMappingPayload")
+		case "controlEdge":
+			out.Values[i] = ec._CreateControlSnapshotMappingPayload_controlEdge(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "snapshotEdge":
+			out.Values[i] = ec._CreateControlSnapshotMappingPayload_snapshotEdge(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -63759,6 +64744,50 @@ func (ec *executionContext) _DeleteControlPayload(ctx context.Context, sel ast.S
 			out.Values[i] = graphql.MarshalString("DeleteControlPayload")
 		case "deletedControlId":
 			out.Values[i] = ec._DeleteControlPayload_deletedControlId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteControlSnapshotMappingPayloadImplementors = []string{"DeleteControlSnapshotMappingPayload"}
+
+func (ec *executionContext) _DeleteControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, obj *types.DeleteControlSnapshotMappingPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteControlSnapshotMappingPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteControlSnapshotMappingPayload")
+		case "deletedControlId":
+			out.Values[i] = ec._DeleteControlSnapshotMappingPayload_deletedControlId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletedSnapshotId":
+			out.Values[i] = ec._DeleteControlSnapshotMappingPayload_deletedSnapshotId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -66986,6 +68015,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createControlSnapshotMapping":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createControlSnapshotMapping(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteControlSnapshotMapping":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteControlSnapshotMapping(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createTask":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createTask(ctx, field)
@@ -69697,6 +70740,42 @@ func (ec *executionContext) _Snapshot(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "controls":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_controls(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Snapshot_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -74817,6 +75896,25 @@ func (ec *executionContext) marshalNCreateControlPayload2ᚖgithubᚗcomᚋgetpr
 	return ec._CreateControlPayload(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNCreateControlSnapshotMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlSnapshotMappingInput(ctx context.Context, v any) (types.CreateControlSnapshotMappingInput, error) {
+	res, err := ec.unmarshalInputCreateControlSnapshotMappingInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCreateControlSnapshotMappingPayload2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, v types.CreateControlSnapshotMappingPayload) graphql.Marshaler {
+	return ec._CreateControlSnapshotMappingPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateControlSnapshotMappingPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, v *types.CreateControlSnapshotMappingPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateControlSnapshotMappingPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNCreateDatumInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐCreateDatumInput(ctx context.Context, v any) (types.CreateDatumInput, error) {
 	res, err := ec.unmarshalInputCreateDatumInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -75545,6 +76643,25 @@ func (ec *executionContext) marshalNDeleteControlPayload2ᚖgithubᚗcomᚋgetpr
 		return graphql.Null
 	}
 	return ec._DeleteControlPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDeleteControlSnapshotMappingInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlSnapshotMappingInput(ctx context.Context, v any) (types.DeleteControlSnapshotMappingInput, error) {
+	res, err := ec.unmarshalInputDeleteControlSnapshotMappingInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDeleteControlSnapshotMappingPayload2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, v types.DeleteControlSnapshotMappingPayload) graphql.Marshaler {
+	return ec._DeleteControlSnapshotMappingPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteControlSnapshotMappingPayload2ᚖgithubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteControlSnapshotMappingPayload(ctx context.Context, sel ast.SelectionSet, v *types.DeleteControlSnapshotMappingPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteControlSnapshotMappingPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDeleteDatumInput2githubᚗcomᚋgetproboᚋproboᚋpkgᚋserverᚋapiᚋconsoleᚋv1ᚋtypesᚐDeleteDatumInput(ctx context.Context, v any) (types.DeleteDatumInput, error) {

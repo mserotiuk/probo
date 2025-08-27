@@ -178,6 +178,7 @@ type Control struct {
 	Measures               *MeasureConnection     `json:"measures"`
 	Documents              *DocumentConnection    `json:"documents"`
 	Audits                 *AuditConnection       `json:"audits"`
+	Snapshots              *SnapshotConnection    `json:"snapshots"`
 	CreatedAt              time.Time              `json:"createdAt"`
 	UpdatedAt              time.Time              `json:"updatedAt"`
 }
@@ -282,6 +283,16 @@ type CreateControlMeasureMappingPayload struct {
 
 type CreateControlPayload struct {
 	ControlEdge *ControlEdge `json:"controlEdge"`
+}
+
+type CreateControlSnapshotMappingInput struct {
+	ControlID  gid.GID `json:"controlId"`
+	SnapshotID gid.GID `json:"snapshotId"`
+}
+
+type CreateControlSnapshotMappingPayload struct {
+	ControlEdge  *ControlEdge  `json:"controlEdge"`
+	SnapshotEdge *SnapshotEdge `json:"snapshotEdge"`
 }
 
 type CreateDatumInput struct {
@@ -620,6 +631,16 @@ type DeleteControlMeasureMappingPayload struct {
 
 type DeleteControlPayload struct {
 	DeletedControlID gid.GID `json:"deletedControlId"`
+}
+
+type DeleteControlSnapshotMappingInput struct {
+	ControlID  gid.GID `json:"controlId"`
+	SnapshotID gid.GID `json:"snapshotId"`
+}
+
+type DeleteControlSnapshotMappingPayload struct {
+	DeletedControlID  gid.GID `json:"deletedControlId"`
+	DeletedSnapshotID gid.GID `json:"deletedSnapshotId"`
 }
 
 type DeleteDatumInput struct {
@@ -1231,6 +1252,7 @@ type Snapshot struct {
 	Name         string                 `json:"name"`
 	Description  *string                `json:"description,omitempty"`
 	Type         coredata.SnapshotsType `json:"type"`
+	Controls     *ControlConnection     `json:"controls"`
 	CreatedAt    time.Time              `json:"createdAt"`
 }
 

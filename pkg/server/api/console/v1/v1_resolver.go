@@ -389,6 +389,32 @@ func (r *controlResolver) Audits(ctx context.Context, obj *types.Control, first 
 	return types.NewAuditConnection(page, r, obj.ID), nil
 }
 
+// Snapshots is the resolver for the snapshots field.
+func (r *controlResolver) Snapshots(ctx context.Context, obj *types.Control, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) (*types.SnapshotConnection, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	pageOrderBy := page.OrderBy[coredata.SnapshotOrderField]{
+		Field:     coredata.SnapshotOrderFieldCreatedAt,
+		Direction: page.OrderDirectionDesc,
+	}
+
+	if orderBy != nil {
+		pageOrderBy = page.OrderBy[coredata.SnapshotOrderField]{
+			Field:     orderBy.Field,
+			Direction: orderBy.Direction,
+		}
+	}
+
+	cursor := types.NewCursor(first, after, last, before, pageOrderBy)
+
+	page, err := prb.Snapshots.ListForControlID(ctx, obj.ID, cursor)
+	if err != nil {
+		panic(fmt.Errorf("cannot list control snapshots: %w", err))
+	}
+
+	return types.NewSnapshotConnection(page, r, obj.ID), nil
+}
+
 // TotalCount is the resolver for the totalCount field.
 func (r *controlConnectionResolver) TotalCount(ctx context.Context, obj *types.ControlConnection) (int, error) {
 	prb := r.ProboService(ctx, obj.ParentID.TenantID())
@@ -1820,6 +1846,36 @@ func (r *mutationResolver) DeleteControlAuditMapping(ctx context.Context, input 
 	return &types.DeleteControlAuditMappingPayload{
 		DeletedControlID: control.ID,
 		DeletedAuditID:   audit.ID,
+	}, nil
+}
+
+// CreateControlSnapshotMapping is the resolver for the createControlSnapshotMapping field.
+func (r *mutationResolver) CreateControlSnapshotMapping(ctx context.Context, input types.CreateControlSnapshotMappingInput) (*types.CreateControlSnapshotMappingPayload, error) {
+	prb := r.ProboService(ctx, input.SnapshotID.TenantID())
+
+	control, snapshot, err := prb.Controls.CreateSnapshotMapping(ctx, input.ControlID, input.SnapshotID)
+	if err != nil {
+		panic(fmt.Errorf("cannot create control snapshot mapping: %w", err))
+	}
+
+	return &types.CreateControlSnapshotMappingPayload{
+		ControlEdge:  types.NewControlEdge(control, coredata.ControlOrderFieldCreatedAt),
+		SnapshotEdge: types.NewSnapshotEdge(snapshot, coredata.SnapshotOrderFieldCreatedAt),
+	}, nil
+}
+
+// DeleteControlSnapshotMapping is the resolver for the deleteControlSnapshotMapping field.
+func (r *mutationResolver) DeleteControlSnapshotMapping(ctx context.Context, input types.DeleteControlSnapshotMappingInput) (*types.DeleteControlSnapshotMappingPayload, error) {
+	prb := r.ProboService(ctx, input.SnapshotID.TenantID())
+
+	control, snapshot, err := prb.Controls.DeleteSnapshotMapping(ctx, input.ControlID, input.SnapshotID)
+	if err != nil {
+		panic(fmt.Errorf("cannot delete control snapshot mapping: %w", err))
+	}
+
+	return &types.DeleteControlSnapshotMappingPayload{
+		DeletedControlID:  control.ID,
+		DeletedSnapshotID: snapshot.ID,
 	}, nil
 }
 
@@ -3908,6 +3964,36 @@ func (r *snapshotResolver) Organization(ctx context.Context, obj *types.Snapshot
 	}
 
 	return types.NewOrganization(organization), nil
+}
+
+// Controls is the resolver for the controls field.
+func (r *snapshotResolver) Controls(ctx context.Context, obj *types.Snapshot, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.ControlOrderBy, filter *types.ControlFilter) (*types.ControlConnection, error) {
+	prb := r.ProboService(ctx, obj.ID.TenantID())
+
+	pageOrderBy := page.OrderBy[coredata.ControlOrderField]{
+		Field:     coredata.ControlOrderFieldCreatedAt,
+		Direction: page.OrderDirectionDesc,
+	}
+	if orderBy != nil {
+		pageOrderBy = page.OrderBy[coredata.ControlOrderField]{
+			Field:     orderBy.Field,
+			Direction: orderBy.Direction,
+		}
+	}
+
+	cursor := types.NewCursor(first, after, last, before, pageOrderBy)
+
+	var controlFilter = coredata.NewControlFilter(nil)
+	if filter != nil {
+		controlFilter = coredata.NewControlFilter(filter.Query)
+	}
+
+	page, err := prb.Controls.ListForSnapshotID(ctx, obj.ID, cursor, controlFilter)
+	if err != nil {
+		panic(fmt.Errorf("cannot list snapshot controls: %w", err))
+	}
+
+	return types.NewControlConnection(page, r, obj.ID, controlFilter), nil
 }
 
 // TotalCount is the resolver for the totalCount field.

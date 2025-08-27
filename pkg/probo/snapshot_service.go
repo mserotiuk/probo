@@ -184,3 +184,34 @@ func (s *SnapshotService) CountForOrganizationID(
 
 	return count, nil
 }
+
+func (s *SnapshotService) ListForControlID(
+	ctx context.Context,
+	controlID gid.GID,
+	cursor *page.Cursor[coredata.SnapshotOrderField],
+) (*page.Page[*coredata.Snapshot, coredata.SnapshotOrderField], error) {
+	var snapshots coredata.Snapshots
+	control := &coredata.Control{}
+
+	err := s.svc.pg.WithConn(
+		ctx,
+		func(conn pg.Conn) error {
+			if err := control.LoadByID(ctx, conn, s.svc.scope, controlID); err != nil {
+				return fmt.Errorf("cannot load control: %w", err)
+			}
+
+			err := snapshots.LoadByControlID(ctx, conn, s.svc.scope, control.ID, cursor)
+			if err != nil {
+				return fmt.Errorf("cannot load snapshots: %w", err)
+			}
+
+			return nil
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return page.NewPage(snapshots, cursor), nil
+}

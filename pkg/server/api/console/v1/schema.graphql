@@ -1300,6 +1300,14 @@ type Control implements Node {
     orderBy: AuditOrder
   ): AuditConnection! @goField(forceResolver: true)
 
+  snapshots(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: SnapshotOrder
+  ): SnapshotConnection! @goField(forceResolver: true)
+
   createdAt: Datetime!
   updatedAt: Datetime!
 }
@@ -1537,6 +1545,16 @@ type Snapshot implements Node {
   name: String!
   description: String
   type: SnapshotsType!
+
+  controls(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: ControlOrder
+    filter: ControlFilter
+  ): ControlConnection! @goField(forceResolver: true)
+
   createdAt: Datetime!
 }
 
@@ -1982,6 +2000,12 @@ type Mutation {
   deleteControlAuditMapping(
     input: DeleteControlAuditMappingInput!
   ): DeleteControlAuditMappingPayload!
+  createControlSnapshotMapping(
+    input: CreateControlSnapshotMappingInput!
+  ): CreateControlSnapshotMappingPayload!
+  deleteControlSnapshotMapping(
+    input: DeleteControlSnapshotMappingInput!
+  ): DeleteControlSnapshotMappingPayload!
 
   # Task mutations
   createTask(input: CreateTaskInput!): CreateTaskPayload!
@@ -2394,6 +2418,16 @@ input CreateControlAuditMappingInput {
 input DeleteControlAuditMappingInput {
   controlId: ID!
   auditId: ID!
+}
+
+input CreateControlSnapshotMappingInput {
+  controlId: ID!
+  snapshotId: ID!
+}
+
+input DeleteControlSnapshotMappingInput {
+  controlId: ID!
+  snapshotId: ID!
 }
 
 input CreateRiskInput {
@@ -2863,6 +2897,16 @@ type CreateControlAuditMappingPayload {
 type DeleteControlAuditMappingPayload {
   deletedControlId: ID!
   deletedAuditId: ID!
+}
+
+type CreateControlSnapshotMappingPayload {
+  controlEdge: ControlEdge!
+  snapshotEdge: SnapshotEdge!
+}
+
+type DeleteControlSnapshotMappingPayload {
+  deletedControlId: ID!
+  deletedSnapshotId: ID!
 }
 
 type CreateRiskPayload {

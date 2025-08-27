@@ -24,10 +24,19 @@ export function getSnapshotTypeLabel(__: Translator, type: string | null | undef
     case "DATA":
       return __("Data");
     case "NON_CONFORMITY_REGISTRIES":
-      return __("Non Conformity Registries");
+      return __("Nonconformity Registries");
     case "COMPLIANCE_REGISTRIES":
       return __("Compliance Registries");
     default:
       return __("Unknown");
+  }
+}
+
+export function getSnapshotTypeUrlPath(type?: string): string {
+  switch (type) {
+    case "DATA":
+      return "/data";
+    default:
+      return "";
   }
 }
