@@ -1,10 +1,81 @@
-.git
-bin
-tmp
-node_modules
-dist
-Dockerfile
-compose
-**/node_modules
-**/dist
+# Git
+.git/
+.gitignore
+
+# Build outputs
+bin/
+tmp/
+node_modules/
+dist/
+build/
+apps/*/dist/
+packages/*/dist/
+.turbo/
+
+# Development files
+compose/
+cfg/dev.yaml
+
+# Node.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+.pnpm-debug.log*
+
+# Development and testing
+coverage/
+coverage.out
+coverage.html
+*.test
+*.spec
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Security and SBOM files
+sbom.json
+sbom-docker.json
+*_sbom.json
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+DCO.md
+LICENSE
+SECURITY.md
+docs/
+*.md
+
+# Docker files (keep only production ones)
+docker-compose*.yml
+compose.yaml
+
+# Go build cache
+.cache/
 
