@@ -1,0 +1,118 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile.production"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "sleepApplication": false,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "GO_ENV": "production"
+      }
+    }
+  },
+  "healthcheck": {
+    "httpGet": {
+      "path": "/api/health",
+      "port": 8080
+    },
+    "initialDelaySeconds": 30,
+    "periodSeconds": 30,
+    "timeoutSeconds": 3,
+    "failureThreshold": 3
+  },
+  "services": {
+    "web": {
+      "source": {
+        "type": "git"
+      },
+      "build": {
+        "buildCommand": null,
+        "dockerfilePath": "Dockerfile.production"
+      },
+      "variables": {
+        "PORT": {
+          "default": "8080"
+        },
+        "DATABASE_URL": {
+          "reference": "DATABASE_URL"
+        },
+        "S3_ENDPOINT": {
+          "reference": "S3_ENDPOINT"
+        },
+        "S3_ACCESS_KEY_ID": {
+          "reference": "S3_ACCESS_KEY_ID"
+        },
+        "S3_SECRET_ACCESS_KEY": {
+          "reference": "S3_SECRET_ACCESS_KEY"
+        },
+        "S3_BUCKET": {
+          "reference": "S3_BUCKET"
+        },
+        "OPENAI_API_KEY": {
+          "reference": "OPENAI_API_KEY"
+        },
+        "SESSION_SECRET": {
+          "reference": "SESSION_SECRET"
+        },
+        "APP_URL": {
+          "reference": "APP_URL"
+        },
+        "MAILER_FROM_EMAIL": {
+          "reference": "MAILER_FROM_EMAIL"
+        },
+        "MAILER_FROM_NAME": {
+          "reference": "MAILER_FROM_NAME"
+        },
+        "MAILER_SMTP_HOST": {
+          "reference": "MAILER_SMTP_HOST"
+        },
+        "MAILER_SMTP_PORT": {
+          "reference": "MAILER_SMTP_PORT"
+        },
+        "MAILER_SMTP_USERNAME": {
+          "reference": "MAILER_SMTP_USERNAME"
+        },
+        "MAILER_SMTP_PASSWORD": {
+          "reference": "MAILER_SMTP_PASSWORD"
+        }
+      },
+      "healthcheck": {
+        "httpGet": {
+          "path": "/api/health",
+          "port": 8080
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "postgresql",
+      "config": {
+        "version": "17",
+        "extensions": ["uuid-ossp"]
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "uploads",
+      "mountPath": "/app/uploads"
+    }
+  ],
+  "networking": {
+    "allowPublic": true,
+    "serviceDomains": {
+      "web": {
+        "domain": "${{RAILWAY_STATIC_URL}}"
+      }
+    }
+  }
+}
