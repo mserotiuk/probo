@@ -19,8 +19,9 @@ COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/vendors/package.json ./packages/vendors/
 
-# Install dependencies
-RUN npm ci --frozen-lockfile
+# Install dependencies with memory limit handling
+RUN npm ci --frozen-lockfile --maxsockets=1 || \
+    (echo "Retrying with increased memory..." && node --max-old-space-size=4096 $(which npm) ci --frozen-lockfile)
 
 # Copy source code
 COPY . .

@@ -4,20 +4,31 @@ FROM golang:1.23-alpine AS builder
 # Install build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
+# Set Go toolchain to use available version
+ENV GOTOOLCHAIN=local
+
 # Set working directory
 WORKDIR /app
 
 # Copy dependency files first for better caching
 COPY go.mod go.sum ./
 
-# Download dependencies
-RUN go mod download && go mod verify
+# Copy source files needed for generation
+COPY pkg/ pkg/
+COPY cmd/ cmd/
+COPY internal/ internal/
 
-# Copy source code
-COPY . .
+# Clean up dependencies and download
+RUN go mod tidy && go mod download && go mod verify
+
+# Install tools needed for generation
+RUN go install github.com/99designs/gqlgen@latest
 
 # Generate GraphQL schema and types
 RUN go generate ./pkg/server/api/console/v1
+
+# Copy remaining source files
+COPY . .
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \

@@ -20,7 +20,9 @@ COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/vendors/package.json ./packages/vendors/
 
-RUN npm ci --frozen-lockfile
+# Increase Node.js memory limit and install with retry
+RUN npm ci --frozen-lockfile --maxsockets=1 || \
+    (echo "Retrying with increased memory..." && node --max-old-space-size=4096 $(which npm) ci --frozen-lockfile)
 
 COPY . .
 RUN npm run relay
@@ -30,12 +32,28 @@ RUN npm run build --workspace=@probo/console
 # Build Go backend
 FROM golang:1.23-alpine AS backend-builder
 
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+# Set Go toolchain to use available version
+ENV GOTOOLCHAIN=local
 
-COPY . .
+WORKDIR /app
+
+# Copy dependency files and source needed for generation
+COPY go.mod go.sum ./
+COPY pkg/ pkg/
+COPY cmd/ cmd/
+COPY internal/ internal/
+
+# Clean dependencies and download
+RUN go mod tidy && go mod download && go mod verify
+
+# Install tools needed for generation
+RUN go install github.com/99designs/gqlgen@latest
+
+# Generate GraphQL schema and types
 RUN go generate ./pkg/server/api/console/v1
+
+# Copy remaining source files  
+COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags='-w -s -X "main.version=production" -X "main.env=prod"' \
