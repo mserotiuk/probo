@@ -5,12 +5,19 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy package files for dependency caching
-COPY package*.json ./
-COPY turbo.json ./
+COPY package*.json turbo.json ./
 
-# Copy workspace package files
+# Copy workspace package files individually
 COPY apps/console/package*.json ./apps/console/
-COPY packages/*/package*.json ./packages/*/
+COPY packages/esbuild-plugin-postcss/package.json ./packages/esbuild-plugin-postcss/
+COPY packages/helpers/package.json ./packages/helpers/
+COPY packages/hooks/package.json ./packages/hooks/
+COPY packages/i18n/package.json ./packages/i18n/
+COPY packages/prettier/package.json ./packages/prettier/
+COPY packages/react-lazy/package.json ./packages/react-lazy/
+COPY packages/tsconfig/package.json ./packages/tsconfig/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/vendors/package.json ./packages/vendors/
 
 # Install dependencies
 RUN npm ci --frozen-lockfile

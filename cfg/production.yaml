@@ -31,7 +31,7 @@ probod:
     max-idle-connections: "${DB_MAX_IDLE_CONNECTIONS:5}"
     connection-max-lifetime: "${DB_CONNECTION_MAX_LIFETIME:1h}"
   server:
-    address: "0.0.0.0:8080"
+    address: "0.0.0.0:${PORT:8080}"
     read-timeout: "${SERVER_READ_TIMEOUT:30s}"
     write-timeout: "${SERVER_WRITE_TIMEOUT:30s}"
     idle-timeout: "${SERVER_IDLE_TIMEOUT:120s}"
