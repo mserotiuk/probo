@@ -103,6 +103,10 @@ func (f IncidentRegistryOrderField) NullsLast() bool {
 	panic("unknown incident registry order field")
 }
 
+func (f IncidentRegistryOrderField) Column() string {
+	return f.String()
+}
+
 // Implement page.OrderByField interface
 func (f IncidentRegistryOrderField) OrderBySQL(direction page.OrderDirection) string {
 	sql := f.SQL()

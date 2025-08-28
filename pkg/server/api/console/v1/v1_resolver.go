@@ -961,6 +961,21 @@ func (r *frameworkConnectionResolver) TotalCount(ctx context.Context, obj *types
 	panic(fmt.Errorf("unsupported resolver: %T", obj.Resolver))
 }
 
+// Organization is the resolver for the organization field.
+func (r *incidentRegistryResolver) Organization(ctx context.Context, obj *types.IncidentRegistry) (*types.Organization, error) {
+	panic(fmt.Errorf("not implemented: Organization - organization"))
+}
+
+// Owner is the resolver for the owner field.
+func (r *incidentRegistryResolver) Owner(ctx context.Context, obj *types.IncidentRegistry) (*types.People, error) {
+	panic(fmt.Errorf("not implemented: Owner - owner"))
+}
+
+// TotalCount is the resolver for the totalCount field.
+func (r *incidentRegistryConnectionResolver) TotalCount(ctx context.Context, obj *types.IncidentRegistryConnection) (int, error) {
+	panic(fmt.Errorf("not implemented: TotalCount - totalCount"))
+}
+
 // Evidences is the resolver for the evidences field.
 func (r *measureResolver) Evidences(ctx context.Context, obj *types.Measure, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.EvidenceOrderBy) (*types.EvidenceConnection, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -3706,6 +3721,11 @@ func (r *organizationResolver) ContinualImprovementRegistries(ctx context.Contex
 	return types.NewContinualImprovementRegistryConnection(page, r, obj.ID), nil
 }
 
+// IncidentRegistries is the resolver for the incidentRegistries field.
+func (r *organizationResolver) IncidentRegistries(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.IncidentRegistryOrderBy) (*types.IncidentRegistryConnection, error) {
+	panic(fmt.Errorf("not implemented: IncidentRegistries - incidentRegistries"))
+}
+
 // Snapshots is the resolver for the snapshots field.
 func (r *organizationResolver) Snapshots(ctx context.Context, obj *types.Organization, first *int, after *page.CursorKey, last *int, before *page.CursorKey, orderBy *types.SnapshotOrderBy) (*types.SnapshotConnection, error) {
 	prb := r.ProboService(ctx, obj.ID.TenantID())
@@ -4778,6 +4798,16 @@ func (r *Resolver) FrameworkConnection() schema.FrameworkConnectionResolver {
 	return &frameworkConnectionResolver{r}
 }
 
+// IncidentRegistry returns schema.IncidentRegistryResolver implementation.
+func (r *Resolver) IncidentRegistry() schema.IncidentRegistryResolver {
+	return &incidentRegistryResolver{r}
+}
+
+// IncidentRegistryConnection returns schema.IncidentRegistryConnectionResolver implementation.
+func (r *Resolver) IncidentRegistryConnection() schema.IncidentRegistryConnectionResolver {
+	return &incidentRegistryConnectionResolver{r}
+}
+
 // Measure returns schema.MeasureResolver implementation.
 func (r *Resolver) Measure() schema.MeasureResolver { return &measureResolver{r} }
 
@@ -4896,6 +4926,8 @@ type evidenceResolver struct{ *Resolver }
 type evidenceConnectionResolver struct{ *Resolver }
 type frameworkResolver struct{ *Resolver }
 type frameworkConnectionResolver struct{ *Resolver }
+type incidentRegistryResolver struct{ *Resolver }
+type incidentRegistryConnectionResolver struct{ *Resolver }
 type measureResolver struct{ *Resolver }
 type measureConnectionResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
