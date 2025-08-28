@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -78,7 +77,7 @@ var (
 
 // parseDatabaseURL parses Railway's DATABASE_URL environment variable
 func parseDatabaseURL() pgConfig {
-	// Default configuration
+	// Default configuration for local development
 	cfg := pgConfig{
 		Addr:     "localhost:5432",
 		Username: "probod",
@@ -87,7 +86,7 @@ func parseDatabaseURL() pgConfig {
 		PoolSize: 100,
 	}
 
-	// Try to parse DATABASE_URL first (Railway standard)
+	// Use Railway's DATABASE_URL (primary method)
 	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
 		if u, err := url.Parse(dbURL); err == nil {
 			if u.Host != "" {
@@ -103,36 +102,17 @@ func parseDatabaseURL() pgConfig {
 				cfg.Database = u.Path[1:] // Remove leading '/'
 			}
 			
-			// Check for SSL mode and CA cert
+			// Railway uses SSL by default
 			query := u.Query()
-			if query.Get("sslmode") == "require" {
-				// Railway typically requires SSL
-				cfg.CACertBundle = os.Getenv("DATABASE_CA_CERT")
+			if query.Get("sslmode") == "require" || query.Get("sslmode") == "prefer" {
+				cfg.CACertBundle = "" // Railway handles SSL internally
 			}
 		}
 	}
 
-	// Override with individual environment variables if present
-	if pgHost := os.Getenv("PGHOST"); pgHost != "" {
-		pgPort := os.Getenv("PGPORT")
-		if pgPort == "" {
-			pgPort = "5432"
-		}
-		cfg.Addr = pgHost + ":" + pgPort
-	}
-	if pgUser := os.Getenv("PGUSER"); pgUser != "" {
-		cfg.Username = pgUser
-	}
-	if pgPassword := os.Getenv("PGPASSWORD"); pgPassword != "" {
-		cfg.Password = pgPassword
-	}
+	// Fallback to Railway's individual PostgreSQL variables if DATABASE_URL parsing fails
 	if pgDatabase := os.Getenv("PGDATABASE"); pgDatabase != "" {
 		cfg.Database = pgDatabase
-	}
-	if pgPoolSize := os.Getenv("PG_POOL_SIZE"); pgPoolSize != "" {
-		if poolSize, err := strconv.ParseInt(pgPoolSize, 10, 32); err == nil {
-			cfg.PoolSize = int32(poolSize)
-		}
 	}
 	
 	return cfg
@@ -141,13 +121,36 @@ func parseDatabaseURL() pgConfig {
 func New() *Implm {
 	// Get API address from environment (Railway sets PORT)
 	apiAddr := "localhost:8080"
+	hostname := "localhost:8080"
+	cookieDomain := "localhost"
+	
 	if port := os.Getenv("PORT"); port != "" {
 		apiAddr = "0.0.0.0:" + port
 	}
 	
+	// Use Railway's APP_URL for hostname and cookie domain if available
+	if appURL := os.Getenv("APP_URL"); appURL != "" {
+		if u, err := url.Parse(appURL); err == nil && u.Host != "" {
+			hostname = u.Host
+			cookieDomain = u.Host
+		}
+	}
+	
+	// Configure session secret from Railway
+	sessionSecret := "this-is-a-secure-secret-for-cookie-signing-at-least-32-bytes"
+	if railwaySecret := os.Getenv("SESSION_SECRET"); railwaySecret != "" {
+		sessionSecret = railwaySecret
+	}
+	
+	// Configure S3 bucket from Railway
+	s3Bucket := "probod"
+	if bucket := os.Getenv("S3_BUCKET"); bucket != "" {
+		s3Bucket = bucket
+	}
+	
 	return &Implm{
 		cfg: config{
-			Hostname: apiAddr,
+			Hostname: hostname,
 			Api: apiConfig{
 				Addr: apiAddr,
 			},
@@ -160,16 +163,16 @@ func New() *Implm {
 				},
 				Cookie: cookieConfig{
 					Name:     "SSID",
-					Secret:   "this-is-a-secure-secret-for-cookie-signing-at-least-32-bytes",
+					Secret:   sessionSecret,
 					Duration: 24,
-					Domain:   "localhost",
+					Domain:   cookieDomain,
 				},
 				DisableSignup:                       false,
 				InvitationConfirmationTokenValidity: 3600,
 			},
 			TrustAuth: trustAuthConfig{
 				CookieName:        "TCT",
-				CookieDomain:      "localhost",
+				CookieDomain:      cookieDomain,
 				CookieDuration:    24,
 				TokenDuration:     168,
 				ReportURLDuration: 15,
@@ -179,7 +182,12 @@ func New() *Implm {
 			},
 			AWS: awsConfig{
 				Region: "us-east-1",
-				Bucket: "probod",
+				Bucket: s3Bucket,
+			},
+			OpenAI: openaiConfig{
+				APIKey:      os.Getenv("OPENAI_API_KEY"),
+				Temperature: 0.1,
+				ModelName:   "gpt-4o",
 			},
 			Mailer: mailerConfig{
 				SenderEmail: "no-reply@notification.getprobo.com",
