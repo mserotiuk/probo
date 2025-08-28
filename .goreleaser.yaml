@@ -90,15 +90,15 @@ signs:
     output: true
 
 docker_manifests:
-  - name_template: "ghcr.io/getprobo/probo:{{ .Tag }}"
+  - name_template: "ghcr.io/mserotiuk/probo:{{ .Tag }}"
     image_templates:
-      - "ghcr.io/getprobo/probo:{{ .Tag }}-amd64"
-      - "ghcr.io/getprobo/probo:{{ .Tag }}-arm64"
+      - "ghcr.io/mserotiuk/probo:{{ .Tag }}-amd64"
+      - "ghcr.io/mserotiuk/probo:{{ .Tag }}-arm64"
     skip_push: "{{ .IsSnapshot }}"
-  - name_template: "ghcr.io/getprobo/probo:latest"
+  - name_template: "ghcr.io/mserotiuk/probo:latest"
     image_templates:
-      - "ghcr.io/getprobo/probo:latest-amd64"
-      - "ghcr.io/getprobo/probo:latest-arm64"
+      - "ghcr.io/mserotiuk/probo:latest-amd64"
+      - "ghcr.io/mserotiuk/probo:latest-arm64"
     skip_push: "{{ .IsSnapshot }}"
 
 docker_signs:
@@ -133,16 +133,16 @@ docker_signs:
 
 dockers:
   - image_templates:
-      - "ghcr.io/getprobo/probo:{{ .Tag }}-amd64"
-      - "ghcr.io/getprobo/probo:latest-amd64"
+      - "ghcr.io/mserotiuk/probo:{{ .Tag }}-amd64"
+      - "ghcr.io/mserotiuk/probo:latest-amd64"
     dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.description=Probo compliance management platform"
-      - "--label=org.opencontainers.image.url=https://github.com/getprobo/probo"
-      - "--label=org.opencontainers.image.source=https://github.com/getprobo/probo"
+      - "--label=org.opencontainers.image.url=https://github.com/mserotiuk/probo"
+      - "--label=org.opencontainers.image.source=https://github.com/mserotiuk/probo"
       - "--label=org.opencontainers.image.version={{.Version}}"
       - '--label=org.opencontainers.image.created={{time "2006-01-02T15:04:05Z07:00"}}'
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -154,16 +154,16 @@ dockers:
     goarch: amd64
     skip_push: "{{ .IsSnapshot }}"
   - image_templates:
-      - "ghcr.io/getprobo/probo:{{ .Tag }}-arm64"
-      - "ghcr.io/getprobo/probo:latest-arm64"
+      - "ghcr.io/mserotiuk/probo:{{ .Tag }}-arm64"
+      - "ghcr.io/mserotiuk/probo:latest-arm64"
     dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
       - "--platform=linux/arm64"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.description=Probo compliance management platform"
-      - "--label=org.opencontainers.image.url=https://github.com/getprobo/probo"
-      - "--label=org.opencontainers.image.source=https://github.com/getprobo/probo"
+      - "--label=org.opencontainers.image.url=https://github.com/mserotiuk/probo"
+      - "--label=org.opencontainers.image.source=https://github.com/mserotiuk/probo"
       - "--label=org.opencontainers.image.version={{.Version}}"
       - '--label=org.opencontainers.image.created={{time "2006-01-02T15:04:05Z07:00"}}'
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -198,9 +198,9 @@ release:
     ## Changes in {{ .Tag }}
   footer: |
     ## Docker Images
-    - `ghcr.io/getprobo/probo:{{ .Tag }}` (multi-arch: linux/amd64, linux/arm64)
-    - `ghcr.io/getprobo/probo:latest` (multi-arch: linux/amd64, linux/arm64)
+    - `ghcr.io/mserotiuk/probo:{{ .Tag }}` (multi-arch: linux/amd64, linux/arm64)
+    - `ghcr.io/mserotiuk/probo:latest` (multi-arch: linux/amd64, linux/arm64)
 
     ### Architecture-specific images
-    - `ghcr.io/getprobo/probo:{{ .Tag }}-amd64`
-    - `ghcr.io/getprobo/probo:{{ .Tag }}-arm64`
+    - `ghcr.io/mserotiuk/probo:{{ .Tag }}-amd64`
+    - `ghcr.io/mserotiuk/probo:{{ .Tag }}-arm64`

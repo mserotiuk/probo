@@ -1728,6 +1728,24 @@ type ContinualImprovementRegistry implements Node {
   updatedAt: Datetime!
 }
 
+type IncidentRegistry implements Node {
+  id: ID!
+  organization: Organization! @goField(forceResolver: true)
+  referenceId: String!
+  title: String!
+  description: String
+  source: String
+  owner: People! @goField(forceResolver: true)
+  incidentDate: Datetime
+  resolvedDate: Datetime
+  status: IncidentRegistryStatus!
+  priority: IncidentRegistryPriority!
+  severity: IncidentRegistrySeverity!
+  category: String
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
 type Snapshot implements Node {
   id: ID!
   organization: Organization! @goField(forceResolver: true)
@@ -2081,6 +2099,20 @@ type ContinualImprovementRegistryConnection
 type ContinualImprovementRegistryEdge {
   cursor: CursorKey!
   node: ContinualImprovementRegistry!
+}
+
+type IncidentRegistryConnection
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.IncidentRegistryConnection"
+  ) {
+  totalCount: Int! @goField(forceResolver: true)
+  edges: [IncidentRegistryEdge!]!
+  pageInfo: PageInfo!
+}
+
+type IncidentRegistryEdge {
+  cursor: CursorKey!
+  node: IncidentRegistry!
 }
 
 type SnapshotConnection
@@ -2962,6 +2994,40 @@ input DeleteContinualImprovementRegistryInput {
   continualImprovementRegistryId: ID!
 }
 
+input CreateIncidentRegistryInput {
+  organizationId: ID!
+  referenceId: String!
+  title: String!
+  description: String
+  source: String
+  ownerId: ID!
+  incidentDate: Datetime
+  resolvedDate: Datetime
+  status: IncidentRegistryStatus!
+  priority: IncidentRegistryPriority!
+  severity: IncidentRegistrySeverity!
+  category: String
+}
+
+input UpdateIncidentRegistryInput {
+  id: ID!
+  referenceId: String
+  title: String
+  description: String
+  source: String
+  ownerId: ID
+  incidentDate: Datetime
+  resolvedDate: Datetime
+  status: IncidentRegistryStatus
+  priority: IncidentRegistryPriority
+  severity: IncidentRegistrySeverity
+  category: String
+}
+
+input DeleteIncidentRegistryInput {
+  incidentRegistryId: ID!
+}
+
 input CreateSnapshotInput {
   organizationId: ID!
   name: String!
@@ -3703,6 +3769,18 @@ type UpdateContinualImprovementRegistryPayload {
 
 type DeleteContinualImprovementRegistryPayload {
   deletedContinualImprovementRegistryId: ID!
+}
+
+type CreateIncidentRegistryPayload {
+  incidentRegistryEdge: IncidentRegistryEdge!
+}
+
+type UpdateIncidentRegistryPayload {
+  incidentRegistry: IncidentRegistry!
+}
+
+type DeleteIncidentRegistryPayload {
+  deletedIncidentRegistryId: ID!
 }
 
 type CreateSnapshotPayload {

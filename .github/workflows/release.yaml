@@ -106,14 +106,14 @@ jobs:
         id: image
         run: |
           echo "Getting image digest..."
-          DIGEST=$(docker buildx imagetools inspect ghcr.io/getprobo/probo:${{ github.ref_name }} --format '{{json .Manifest.Digest}}' | jq -r)
+          DIGEST=$(docker buildx imagetools inspect ghcr.io/mserotiuk/probo:${{ github.ref_name }} --format '{{json .Manifest.Digest}}' | jq -r)
           echo "Successfully retrieved digest: $DIGEST"
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
       - name: Attest Docker image SBOM
         uses: actions/attest-sbom@v1
         with:
-          subject-name: "ghcr.io/getprobo/probo"
+          subject-name: "ghcr.io/mserotiuk/probo"
           subject-digest: ${{ steps.image.outputs.digest }}
           sbom-path: "sbom.json"
 

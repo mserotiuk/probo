@@ -7,7 +7,7 @@ CREATE TABLE incident_registries (
     title TEXT NOT NULL,
     description TEXT,
     source TEXT,
-    owner_id TEXT NOT NULL REFERENCES people(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    owner_id TEXT NOT NULL REFERENCES peoples(id) ON DELETE RESTRICT ON UPDATE CASCADE,
     incident_date TIMESTAMP WITH TIME ZONE,
     resolved_date TIMESTAMP WITH TIME ZONE,
     status TEXT NOT NULL CHECK (status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')) DEFAULT 'OPEN',
