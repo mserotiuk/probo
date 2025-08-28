@@ -86,6 +86,7 @@ type (
 		ComplianceRegistries              *ComplianceRegistryService
 		Snapshots                         *SnapshotService
 		ContinualImprovementRegistries    *ContinualImprovementRegistriesService
+		IncidentRegistries                *IncidentRegistryService
 	}
 )
 
@@ -180,5 +181,6 @@ func (s *Service) WithTenant(tenantID gid.TenantID) *TenantService {
 	tenantService.ComplianceRegistries = &ComplianceRegistryService{svc: tenantService}
 	tenantService.Snapshots = &SnapshotService{svc: tenantService}
 	tenantService.ContinualImprovementRegistries = &ContinualImprovementRegistriesService{svc: tenantService}
+	tenantService.IncidentRegistries = &IncidentRegistryService{svc: tenantService}
 	return tenantService
 }
