@@ -215,6 +215,66 @@ enum ContinualImprovementRegistriesPriority
     )
 }
 
+enum IncidentRegistryStatus
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryStatus") {
+  OPEN
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryStatusOpen"
+    )
+  IN_PROGRESS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryStatusInProgress"
+    )
+  RESOLVED
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryStatusResolved"
+    )
+  CLOSED
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryStatusClosed"
+    )
+}
+
+enum IncidentRegistryPriority
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryPriority") {
+  LOW
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryPriorityLow"
+    )
+  MEDIUM
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryPriorityMedium"
+    )
+  HIGH
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryPriorityHigh"
+    )
+  CRITICAL
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryPriorityCritical"
+    )
+}
+
+enum IncidentRegistrySeverity
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.IncidentRegistrySeverity") {
+  LOW
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistrySeverityLow"
+    )
+  MEDIUM
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistrySeverityMedium"
+    )
+  HIGH
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistrySeverityHigh"
+    )
+  CRITICAL
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistrySeverityCritical"
+    )
+}
+
 # Order Field Enums
 enum UserOrderField
   @goModel(model: "github.com/getprobo/probo/pkg/coredata.UserOrderField") {
@@ -734,6 +794,34 @@ enum ContinualImprovementRegistriesOrderField
     )
 }
 
+enum IncidentRegistryOrderField
+  @goModel(model: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderField") {
+  CREATED_AT
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldCreatedAt"
+    )
+  REFERENCE_ID
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldReferenceId"
+    )
+  INCIDENT_DATE
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldIncidentDate"
+    )
+  STATUS
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldStatus"
+    )
+  PRIORITY
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldPriority"
+    )
+  SEVERITY
+    @goEnum(
+      value: "github.com/getprobo/probo/pkg/coredata.IncidentRegistryOrderFieldSeverity"
+    )
+}
+
 enum TrustCenterAccessOrderField
   @goModel(model: "github.com/getprobo/probo/pkg/coredata.TrustCenterAccessOrderField") {
   CREATED_AT
@@ -889,6 +977,14 @@ input ContinualImprovementRegistriesOrder
   ) {
   direction: OrderDirection!
   field: ContinualImprovementRegistriesOrderField!
+}
+
+input IncidentRegistryOrder
+  @goModel(
+    model: "github.com/getprobo/probo/pkg/server/api/console/v1/types.IncidentRegistryOrderBy"
+  ) {
+  direction: OrderDirection!
+  field: IncidentRegistryOrderField!
 }
 
 input TrustCenterAccessOrder
@@ -1150,6 +1246,13 @@ type Organization implements Node {
     before: CursorKey
     orderBy: ContinualImprovementRegistriesOrder
   ): ContinualImprovementRegistryConnection! @goField(forceResolver: true)
+  incidentRegistries(
+    first: Int
+    after: CursorKey
+    last: Int
+    before: CursorKey
+    orderBy: IncidentRegistryOrder
+  ): IncidentRegistryConnection! @goField(forceResolver: true)
 
   snapshots(
     first: Int

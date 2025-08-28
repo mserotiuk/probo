@@ -19,8 +19,10 @@ import {
   IconBox,
   IconShield,
   IconRotateCw,
+  IconWarning,
   Layout,
   SidebarItem,
+  SidebarCategory,
   UserDropdown as UserDropdownRoot,
   UserDropdownItem,
   Skeleton,
@@ -91,87 +93,100 @@ export function MainLayout() {
         </>
       }
       sidebar={
-        <ul className="space-y-[2px]">
-          <SidebarItem
-            label={__("Tasks")}
-            icon={IconInboxEmpty}
-            to={`${prefix}/tasks`}
-          />
-          <SidebarItem
-            label={__("Measures")}
-            icon={IconTodo}
-            to={`${prefix}/measures`}
-          />
-          <SidebarItem
-            label={__("Risks")}
-            icon={IconFire3}
-            to={`${prefix}/risks`}
-          />
-          <SidebarItem
-            label={__("Frameworks")}
-            icon={IconBank}
-            to={`${prefix}/frameworks`}
-          />
-          <SidebarItem
-            label={__("People")}
-            icon={IconGroup1}
-            to={`${prefix}/people`}
-          />
-          <SidebarItem
-            label={__("Vendors")}
-            icon={IconStore}
-            to={`${prefix}/vendors`}
-          />
-          <SidebarItem
-            label={__("Documents")}
-            icon={IconPageTextLine}
-            to={`${prefix}/documents`}
-          />
-          <SidebarItem
-            label={__("Assets")}
-            icon={IconBox}
-            to={`${prefix}/assets`}
-          />
-          <SidebarItem
-            label={__("Data")}
-            icon={IconListStack}
-            to={`${prefix}/data`}
-          />
-          <SidebarItem
-            label={__("Audits")}
-            icon={IconCheckmark1}
-            to={`${prefix}/audits`}
-          />
-          <SidebarItem
-            label={__("Nonconformity Registries")}
-            icon={IconCrossLargeX}
-            to={`${prefix}/nonconformity-registries`}
-          />
-          <SidebarItem
-            label={__("Compliance Registries")}
-            icon={IconBook}
-            to={`${prefix}/compliance-registries`}
-          />
-           <SidebarItem
-            label={__("Continual Improvement Registries")}
-            icon={IconRotateCw}
-            to={`${prefix}/continual-improvement-registries`}
-          />
-          <SidebarItem
-            label={__("Snapshots")}
-            icon={IconClock}
-            to={`${prefix}/snapshots`}
-          />
-          <SidebarItem
-            label={__("Trust Center")}
-            icon={IconShield}
-            to={`${prefix}/trust-center`}
-          />
-          <SidebarItem
-            label={__("Settings")}
-            icon={IconSettingsGear2}
-            to={`${prefix}/settings`}
-          />
+        <ul className="space-y-2">
+          <SidebarCategory label={__("Internal")} defaultExpanded={true}>
+            <SidebarItem
+              label={__("Tasks")}
+              icon={IconInboxEmpty}
+              to={`${prefix}/tasks`}
+            />
+            <SidebarItem
+              label={__("Measures")}
+              icon={IconTodo}
+              to={`${prefix}/measures`}
+            />
+            <SidebarItem
+              label={__("Risks")}
+              icon={IconFire3}
+              to={`${prefix}/risks`}
+            />
+            <SidebarItem
+              label={__("Frameworks")}
+              icon={IconBank}
+              to={`${prefix}/frameworks`}
+            />
+            <SidebarItem
+              label={__("People")}
+              icon={IconGroup1}
+              to={`${prefix}/people`}
+            />
+            <SidebarItem
+              label={__("Vendors")}
+              icon={IconStore}
+              to={`${prefix}/vendors`}
+            />
+            <SidebarItem
+              label={__("Documents")}
+              icon={IconPageTextLine}
+              to={`${prefix}/documents`}
+            />
+            <SidebarItem
+              label={__("Assets")}
+              icon={IconBox}
+              to={`${prefix}/assets`}
+            />
+            <SidebarItem
+              label={__("Data")}
+              icon={IconListStack}
+              to={`${prefix}/data`}
+            />
+            <SidebarItem
+              label={__("Audits")}
+              icon={IconCheckmark1}
+              to={`${prefix}/audits`}
+            />
+          </SidebarCategory>
+
+          <SidebarCategory label={__("Registers")} defaultExpanded={true}>
+            <SidebarItem
+              label={__("Nonconformity Registries")}
+              icon={IconCrossLargeX}
+              to={`${prefix}/nonconformity-registries`}
+            />
+            <SidebarItem
+              label={__("Compliance Registries")}
+              icon={IconBook}
+              to={`${prefix}/compliance-registries`}
+            />
+            <SidebarItem
+              label={__("Continual Improvement Registries")}
+              icon={IconRotateCw}
+              to={`${prefix}/continual-improvement-registries`}
+            />
+            <SidebarItem
+              label={__("Incident Register")}
+              icon={IconWarning}
+              to={`${prefix}/incident-registries`}
+            />
+          </SidebarCategory>
+
+          <SidebarCategory label={__("Misc")} defaultExpanded={true}>
+            <SidebarItem
+              label={__("Snapshots")}
+              icon={IconClock}
+              to={`${prefix}/snapshots`}
+            />
+            <SidebarItem
+              label={__("Trust Center")}
+              icon={IconShield}
+              to={`${prefix}/trust-center`}
+            />
+            <SidebarItem
+              label={__("Settings")}
+              icon={IconSettingsGear2}
+              to={`${prefix}/settings`}
+            />
+          </SidebarCategory>
         </ul>
       }
     >
