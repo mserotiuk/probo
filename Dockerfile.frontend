@@ -1,6 +1,12 @@
 # Multi-stage build for React frontend
 FROM node:22-alpine AS builder
 
+# Set Node.js memory limit and npm configuration
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NPM_CONFIG_AUDIT=false
+ENV NPM_CONFIG_FUND=false
+ENV CI=true
+
 # Set working directory
 WORKDIR /app
 
@@ -19,9 +25,8 @@ COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/vendors/package.json ./packages/vendors/
 
-# Install dependencies with memory limit handling
-RUN npm ci --frozen-lockfile --maxsockets=1 || \
-    (echo "Retrying with increased memory..." && node --max-old-space-size=4096 $(which npm) ci --frozen-lockfile)
+# Install dependencies with optimizations
+RUN npm ci --frozen-lockfile --no-audit --no-fund
 
 # Copy source code
 COPY . .

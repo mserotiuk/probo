@@ -2,6 +2,12 @@
 # This creates a single container that serves both the API and frontend
 FROM node:22-alpine AS frontend-builder
 
+# Set Node.js memory limit and npm configuration
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NPM_CONFIG_AUDIT=false
+ENV NPM_CONFIG_FUND=false
+ENV CI=true
+
 # Build frontend
 WORKDIR /app
 
@@ -20,9 +26,8 @@ COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/vendors/package.json ./packages/vendors/
 
-# Increase Node.js memory limit and install with retry
-RUN npm ci --frozen-lockfile --maxsockets=1 || \
-    (echo "Retrying with increased memory..." && node --max-old-space-size=4096 $(which npm) ci --frozen-lockfile)
+# Install dependencies with optimizations
+RUN npm ci --frozen-lockfile --no-audit --no-fund
 
 COPY . .
 RUN npm run relay
@@ -30,10 +35,10 @@ ENV NODE_ENV=production
 RUN npm run build --workspace=@probo/console
 
 # Build Go backend
-FROM golang:1.23-alpine AS backend-builder
+FROM golang:alpine AS backend-builder
 
-# Set Go toolchain to use available version
-ENV GOTOOLCHAIN=local
+# Set Go toolchain to use available version and allow auto-upgrade
+ENV GOTOOLCHAIN=auto
 
 WORKDIR /app
 

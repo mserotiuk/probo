@@ -1,11 +1,11 @@
 # Multi-stage build for Go backend (probod)
-FROM golang:1.23-alpine AS builder
+FROM golang:alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
-# Set Go toolchain to use available version
-ENV GOTOOLCHAIN=local
+# Set Go toolchain to use available version and allow auto-upgrade
+ENV GOTOOLCHAIN=auto
 
 # Set working directory
 WORKDIR /app
