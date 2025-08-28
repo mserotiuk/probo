@@ -101,7 +101,7 @@ func parseDatabaseURL() pgConfig {
 			if u.Path != "" && len(u.Path) > 1 {
 				cfg.Database = u.Path[1:] // Remove leading '/'
 			}
-			
+
 			// Railway uses SSL by default
 			query := u.Query()
 			if query.Get("sslmode") == "require" || query.Get("sslmode") == "prefer" {
@@ -114,8 +114,25 @@ func parseDatabaseURL() pgConfig {
 	if pgDatabase := os.Getenv("PGDATABASE"); pgDatabase != "" {
 		cfg.Database = pgDatabase
 	}
-	
+
 	return cfg
+}
+
+// getMailpitAddress returns the appropriate mailpit address for local development vs Railway
+func getMailpitAddress() string {
+	// Check if we're running on Railway (Railway sets RAILWAY_ENVIRONMENT)
+	if railwayEnv := os.Getenv("RAILWAY_ENVIRONMENT"); railwayEnv != "" {
+		// Use Railway's internal service address
+		return "mailpit.railway.internal:1025"
+	}
+
+	// Check if MAILPIT_HOST is explicitly set
+	if mailpitHost := os.Getenv("MAILPIT_HOST"); mailpitHost != "" {
+		return mailpitHost
+	}
+
+	// Default to localhost for local development
+	return "localhost:1025"
 }
 
 func New() *Implm {
@@ -123,11 +140,11 @@ func New() *Implm {
 	apiAddr := "localhost:8080"
 	hostname := "localhost:8080"
 	cookieDomain := "localhost"
-	
+
 	if port := os.Getenv("PORT"); port != "" {
 		apiAddr = "0.0.0.0:" + port
 	}
-	
+
 	// Use Railway's APP_URL for hostname and cookie domain if available
 	if appURL := os.Getenv("APP_URL"); appURL != "" {
 		if u, err := url.Parse(appURL); err == nil && u.Host != "" {
@@ -135,26 +152,26 @@ func New() *Implm {
 			cookieDomain = u.Host
 		}
 	}
-	
+
 	// Configure session secret from Railway
 	sessionSecret := "this-is-a-secure-secret-for-cookie-signing-at-least-32-bytes"
 	if railwaySecret := os.Getenv("SESSION_SECRET"); railwaySecret != "" {
 		sessionSecret = railwaySecret
 	}
-	
+
 	// Configure S3 bucket from Railway
 	s3Bucket := "probod"
 	if bucket := os.Getenv("S3_BUCKET"); bucket != "" {
 		s3Bucket = bucket
 	}
-	
+
 	return &Implm{
 		cfg: config{
 			Hostname: hostname,
 			Api: apiConfig{
 				Addr: apiAddr,
 			},
-			Pg: parseDatabaseURL(),
+			Pg:           parseDatabaseURL(),
 			ChromeDPAddr: "localhost:9222",
 			Auth: authConfig{
 				Password: passwordConfig{
@@ -193,7 +210,7 @@ func New() *Implm {
 				SenderEmail: "no-reply@notification.getprobo.com",
 				SenderName:  "Probo",
 				SMTP: smtpConfig{
-					Addr: "localhost:1025",
+					Addr: getMailpitAddress(),
 				},
 			},
 		},
