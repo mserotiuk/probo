@@ -20,6 +20,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -73,20 +76,82 @@ var (
 	_ unit.Runnable     = (*Implm)(nil)
 )
 
+// parseDatabaseURL parses Railway's DATABASE_URL environment variable
+func parseDatabaseURL() pgConfig {
+	// Default configuration
+	cfg := pgConfig{
+		Addr:     "localhost:5432",
+		Username: "probod",
+		Password: "probod",
+		Database: "probod",
+		PoolSize: 100,
+	}
+
+	// Try to parse DATABASE_URL first (Railway standard)
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		if u, err := url.Parse(dbURL); err == nil {
+			if u.Host != "" {
+				cfg.Addr = u.Host
+			}
+			if u.User != nil {
+				cfg.Username = u.User.Username()
+				if password, ok := u.User.Password(); ok {
+					cfg.Password = password
+				}
+			}
+			if u.Path != "" && len(u.Path) > 1 {
+				cfg.Database = u.Path[1:] // Remove leading '/'
+			}
+			
+			// Check for SSL mode and CA cert
+			query := u.Query()
+			if query.Get("sslmode") == "require" {
+				// Railway typically requires SSL
+				cfg.CACertBundle = os.Getenv("DATABASE_CA_CERT")
+			}
+		}
+	}
+
+	// Override with individual environment variables if present
+	if pgHost := os.Getenv("PGHOST"); pgHost != "" {
+		pgPort := os.Getenv("PGPORT")
+		if pgPort == "" {
+			pgPort = "5432"
+		}
+		cfg.Addr = pgHost + ":" + pgPort
+	}
+	if pgUser := os.Getenv("PGUSER"); pgUser != "" {
+		cfg.Username = pgUser
+	}
+	if pgPassword := os.Getenv("PGPASSWORD"); pgPassword != "" {
+		cfg.Password = pgPassword
+	}
+	if pgDatabase := os.Getenv("PGDATABASE"); pgDatabase != "" {
+		cfg.Database = pgDatabase
+	}
+	if pgPoolSize := os.Getenv("PG_POOL_SIZE"); pgPoolSize != "" {
+		if poolSize, err := strconv.ParseInt(pgPoolSize, 10, 32); err == nil {
+			cfg.PoolSize = int32(poolSize)
+		}
+	}
+	
+	return cfg
+}
+
 func New() *Implm {
+	// Get API address from environment (Railway sets PORT)
+	apiAddr := "localhost:8080"
+	if port := os.Getenv("PORT"); port != "" {
+		apiAddr = "0.0.0.0:" + port
+	}
+	
 	return &Implm{
 		cfg: config{
-			Hostname: "localhost:8080",
+			Hostname: apiAddr,
 			Api: apiConfig{
-				Addr: "localhost:8080",
+				Addr: apiAddr,
 			},
-			Pg: pgConfig{
-				Addr:     "localhost:5432",
-				Username: "probod",
-				Password: "probod",
-				Database: "probod",
-				PoolSize: 100,
-			},
+			Pg: parseDatabaseURL(),
 			ChromeDPAddr: "localhost:9222",
 			Auth: authConfig{
 				Password: passwordConfig{
